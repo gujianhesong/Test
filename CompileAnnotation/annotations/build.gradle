@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+dependencies {
+    //需要在project项目的build.gradle加上maven { url "https://maven.google.com" }
+    compile 'com.android.support:support-annotations:25.0.0'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

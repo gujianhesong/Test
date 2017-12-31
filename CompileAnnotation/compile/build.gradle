@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+dependencies {
+    //依赖注解项目annotations
+    compile project(':annotations')
+
+    //依赖AutoService，自动注册注解处理器
+    compile 'com.google.auto.service:auto-service:1.0-rc3'
+
+    //依赖JavaPoet，用于生成Java类
+    compile 'com.squareup:javapoet:1.9.0'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
