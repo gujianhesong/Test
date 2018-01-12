@@ -57,7 +57,7 @@ public class AudioEncodeUtil {
   public static void convertPcm2Wav(String inPcmFilePath, String outWavFilePath) {
 
     convertPcm2Wav(inPcmFilePath, outWavFilePath, Constant.ExportSampleRate,
-        Constant.ExportChannelNumber);
+        Constant.ExportChannelNumber, 16);
   }
 
 

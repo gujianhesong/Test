@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static android.R.attr.format;
+
 /**
  * 音频文件解码
  */
@@ -274,6 +276,7 @@ import java.nio.ByteBuffer;
 
     int sampleRate = 0;
     int channelCount = 0;
+    int bitNumber = 0;
     long duration = 0;
     String mime = null;
     MediaExtractor mediaExtractor = new MediaExtractor();
@@ -297,6 +300,7 @@ import java.nio.ByteBuffer;
         MediaFormat.KEY_SAMPLE_RATE) : 44100;
     channelCount = mediaFormat.containsKey(MediaFormat.KEY_CHANNEL_COUNT) ? mediaFormat.getInteger(
         MediaFormat.KEY_CHANNEL_COUNT) : 1;
+    bitNumber = (mediaFormat.containsKey("bit-width") ? mediaFormat.getInteger("bit-width") : 0);
     duration = mediaFormat.containsKey(MediaFormat.KEY_DURATION) ? mediaFormat.getLong(
         MediaFormat.KEY_DURATION) : 0;
     mime =
@@ -352,7 +356,7 @@ import java.nio.ByteBuffer;
         startMicroseconds, endMicroseconds, decodeOperateInterface);
 
     if (isWave) {
-      convertPcmFileToWaveFile(pcmFilePath, wavFilePath, sampleRate, channelCount);
+      convertPcmFileToWaveFile(pcmFilePath, wavFilePath, sampleRate, channelCount, bitNumber);
 
       new File(pcmFilePath).delete();
     }
@@ -366,10 +370,11 @@ import java.nio.ByteBuffer;
    * @param pcmFilePath 源pcm文件路径
    * @param waveFilePath 目标wave文件路径
    * @param channels 声道数
+   * @param bitNumber 采样位数，8或16
    */
   private void convertPcmFileToWaveFile(String pcmFilePath, String waveFilePath, int sampleRate,
-      int channels) {
-    AudioEncodeUtil.convertPcm2Wav(pcmFilePath, waveFilePath, sampleRate, channels);
+      int channels, int bitNumber) {
+    AudioEncodeUtil.convertPcm2Wav(pcmFilePath, waveFilePath, sampleRate, channels, bitNumber);
   }
 
   /**

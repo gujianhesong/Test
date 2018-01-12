@@ -27,8 +27,9 @@ public class AudioMixUtil {
     }
 
     String srcWavePath = audio.getPath();
-    int channels = audio.getChannel();
     int sampleRate = audio.getSampleRate();
+    int channels = audio.getChannel();
+    int byteNum = audio.getByteNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile newFos = null;
     String tempOutPcmPath = srcWavePath + ".tempPcm";
@@ -73,7 +74,7 @@ public class AudioMixUtil {
     // 删除源文件,
     new File(srcWavePath).delete();
     // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, srcWavePath, sampleRate, channels);
+    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, srcWavePath, sampleRate, channels, byteNum * 8);
     //删除临时文件
     new File(tempOutPcmPath).delete();
 
@@ -90,8 +91,9 @@ public class AudioMixUtil {
 
     String srcWavePath = srcAudio.getPath();
     String coverWavePath = coverAudio.getPath();
-    int channels = srcAudio.getChannel();
     int sampleRate = srcAudio.getSampleRate();
+    int channels = srcAudio.getChannel();
+    int byteNum = srcAudio.getByteNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile coverFis = null;
     RandomAccessFile newFos = null;
@@ -164,7 +166,7 @@ public class AudioMixUtil {
     // 删除源文件,
     //new File(srcWavePath).delete();
     // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels);
+    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, byteNum * 8);
     //删除临时文件
     new File(tempOutPcmPath).delete();
   }
@@ -180,8 +182,9 @@ public class AudioMixUtil {
 
     String srcWavePath = srcAudio.getPath();
     String coverWavePath = coverAudio.getPath();
-    int channels = srcAudio.getChannel();
     int sampleRate = srcAudio.getSampleRate();
+    int channels = srcAudio.getChannel();
+    int byteNum = srcAudio.getByteNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile coverFis = null;
     RandomAccessFile newFos = null;
@@ -251,7 +254,7 @@ public class AudioMixUtil {
     // 删除源文件,
     //new File(srcWavePath).delete();
     // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels);
+    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, byteNum * 8);
     //删除临时文件
     new File(tempOutPcmPath).delete();
   }
