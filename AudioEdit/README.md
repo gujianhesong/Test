@@ -4,6 +4,12 @@
 
 请大家关注我的微信公众号【hesong】，最新技术解说第一时间发布，谢谢大家支持。
 
+
+![](https://raw.githubusercontent.com/gujianhesong/Test/master/AudioEdit/screen/audio_cut.png)
+![](https://raw.githubusercontent.com/gujianhesong/Test/master/AudioEdit/screen/audio_insert.png)
+![](https://raw.githubusercontent.com/gujianhesong/Test/master/AudioEdit/screen/audio_mix.png)
+
+
 >[我的博客](http://blog.csdn.net/hesong1120?ref=toolbar)
 <br>[GitHub](https://github.com/gujianhesong)
 <br>[我的简书](https://www.jianshu.com/u/75d212bdd107)
