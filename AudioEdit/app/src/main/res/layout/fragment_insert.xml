@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context="com.pinery.audioedit.MainActivity"
+    >
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+      <TextView
+          android:id="@+id/tv_audio_path_1"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="#33ffff00"
+          android:text="/storage/emulated/0/lzy.mp3"
+          />
+
+      <TextView
+          android:id="@+id/tv_audio_length_1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="#33ffff00"
+          android:text="音频时长："
+          android:textColor="#ff0000"
+          />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_pick_audio_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="选择音频"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+      <TextView
+          android:id="@+id/tv_audio_path_2"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:background="#33ffff00"
+          android:text="/storage/emulated/0/qmys.mp3"
+          />
+
+      <TextView
+          android:id="@+id/tv_audio_length_2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="#33ffff00"
+          android:text="音频时长："
+          android:textColor="#ff0000"
+          />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_pick_audio_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:text="选择音频"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#33ffff00"
+        android:text="开始时间："
+        android:textColor="#ff0000"
+        />
+
+    <EditText
+        android:id="@+id/et_start_time"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:background="#33ffff00"
+        android:inputType="number"
+        android:maxLength="5"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="秒"
+        android:textColor="#ff0000"
+        />
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/btn_insert_audio"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="8dp"
+      android:text="插入音频"
+      />
+
+  <Button
+      android:id="@+id/btn_play_audio"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="8dp"
+      android:text="播放"
+      />
+
+  <TextView
+      android:id="@+id/tv_msg_info"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:background="#33ffff00"
+      android:textColor="#ff0000"
+      />
+
+</LinearLayout>
