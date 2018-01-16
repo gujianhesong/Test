@@ -23,7 +23,7 @@
 
     <activity android:name=".MainActivity2"/>
 
-    <service android:name=".service.TaskService"/>
+    <service android:name=".service.AudioTaskService"/>
 
   </application>
 

@@ -77,8 +77,6 @@ public class AudioEncodeUtil {
     byte[] data = new byte[1024];
 
     try {
-      //采样字节byte率
-      long byteRate = sampleRate * channels * bitNum / 8;
 
       in = new FileInputStream(inPcmFilePath);
       out = new FileOutputStream(outWavFilePath);
@@ -86,10 +84,7 @@ public class AudioEncodeUtil {
       //PCM文件大小
       long totalAudioLen = in.getChannel().size();
 
-      //总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
-      long totalDataLen = totalAudioLen + 36;
-
-      writeWaveFileHeader(out, totalAudioLen, totalDataLen, sampleRate, channels, byteRate);
+      writeWaveFileHeader(out, totalAudioLen, sampleRate, channels, bitNum);
 
       int length = 0;
       while ((length = in.read(data)) > 0) {
@@ -115,19 +110,36 @@ public class AudioEncodeUtil {
     }
   }
 
-
   /**
    * 输出WAV文件
    * @param out WAV输出文件流
    * @param totalAudioLen 整个音频PCM数据大小
-   * @param totalDataLen 整个数据大小
    * @param sampleRate 采样率
    * @param channels 声道数
-   * @param byteRate 采样字节byte率
+   * @param bitNum 采样位数
    * @throws IOException
    */
   private static void writeWaveFileHeader(FileOutputStream out, long totalAudioLen,
-      long totalDataLen, int sampleRate, int channels, long byteRate) throws IOException {
+      int sampleRate, int channels, int bitNum) throws IOException {
+    byte[] header = getWaveHeader(totalAudioLen, sampleRate, channels, bitNum);
+    out.write(header, 0, 44);
+  }
+
+  /**
+   * 获取Wav header 字节数据
+   * @param totalAudioLen 整个音频PCM数据大小
+   * @param sampleRate 采样率
+   * @param channels 声道数
+   * @param bitNum 采样位数
+   * @throws IOException
+   */
+  public static byte[] getWaveHeader(long totalAudioLen, int sampleRate, int channels, int bitNum) throws IOException {
+
+    //总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
+    long totalDataLen = totalAudioLen + 36;
+    //采样字节byte率
+    long byteRate = sampleRate * channels * bitNum / 8;
+
     byte[] header = new byte[44];
     header[0] = 'R'; // RIFF
     header[1] = 'I';
@@ -182,6 +194,8 @@ public class AudioEncodeUtil {
     header[41] = (byte) ((totalAudioLen >> 8) & 0xff);
     header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
     header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
-    out.write(header, 0, 44);
+
+    return header;
   }
+
 }

@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
  * 音频合成
  */
 
-public class AudioMixUtil {
+public class AudioEditUtil {
 
   //wave头文件大小
   private static final int WAVE_HEAD_SIZE = 44;
@@ -17,36 +17,45 @@ public class AudioMixUtil {
 
   /**
    * 裁剪音频
-   * @param audio
-   * @param cutStartTime
-   * @param cutEndTime
+   * @param audio 音频信息
+   * @param cutStartTime 裁剪开始时间
+   * @param cutEndTime 裁剪结束时间
    */
   public static void cutAudio(Audio audio, float cutStartTime, float cutEndTime){
     if(cutStartTime == 0 && cutEndTime == audio.getTimeMillis() / 1000f){
+      return;
+    }
+    if(cutStartTime >= cutEndTime){
       return;
     }
 
     String srcWavePath = audio.getPath();
     int sampleRate = audio.getSampleRate();
     int channels = audio.getChannel();
-    int byteNum = audio.getByteNum();
+    int bitNum = audio.getBitNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile newFos = null;
-    String tempOutPcmPath = srcWavePath + ".tempPcm";
+    String tempOutPath = srcWavePath + ".temp";
     try {
 
       //创建输入流
       srcFis = new RandomAccessFile(srcWavePath, "rw");
-      newFos = new RandomAccessFile(tempOutPcmPath, "rw");
+      newFos = new RandomAccessFile(tempOutPath, "rw");
 
-      final int cutStartPos = getPositionFromWave(cutStartTime, channels, sampleRate);
-      final int cutEndPos = getPositionFromWave(cutEndTime, channels, sampleRate);
+      //源文件开始读取位置，结束读取文件，读取数据的大小
+      final int cutStartPos = getPositionFromWave(cutStartTime, sampleRate, channels, bitNum);
+      final int cutEndPos = getPositionFromWave(cutEndTime, sampleRate, channels, bitNum);
+      final int contentSize = cutEndPos - cutStartPos;
 
-      //复制源音频srcStartTime时间之前的数据
-      //跳过头文件数据
+      //复制wav head 字节数据
+      byte[] headerData = AudioEncodeUtil.getWaveHeader(contentSize, sampleRate, channels, bitNum);
+      copyHeadData(headerData, newFos);
+
+      //移动到文件开始读取处
       srcFis.seek(WAVE_HEAD_SIZE + cutStartPos);
 
-      copyData(srcFis, newFos, cutEndPos - cutStartPos);
+      //复制裁剪的音频数据
+      copyData(srcFis, newFos, contentSize);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -73,10 +82,8 @@ public class AudioMixUtil {
 
     // 删除源文件,
     new File(srcWavePath).delete();
-    // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, srcWavePath, sampleRate, channels, byteNum * 8);
-    //删除临时文件
-    new File(tempOutPcmPath).delete();
+    //重命名为源文件
+    FileUtils.renameFile(new File(tempOutPath), audio.getPath());
 
   }
 
@@ -93,7 +100,7 @@ public class AudioMixUtil {
     String coverWavePath = coverAudio.getPath();
     int sampleRate = srcAudio.getSampleRate();
     int channels = srcAudio.getChannel();
-    int byteNum = srcAudio.getByteNum();
+    int bitNum = srcAudio.getBitNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile coverFis = null;
     RandomAccessFile newFos = null;
@@ -105,7 +112,7 @@ public class AudioMixUtil {
       coverFis = new RandomAccessFile(coverWavePath, "rw");
       newFos = new RandomAccessFile(tempOutPcmPath, "rw");
 
-      final int srcStartPos = getPositionFromWave(srcStartTime, channels, sampleRate);
+      final int srcStartPos = getPositionFromWave(srcStartTime, sampleRate, channels, bitNum);
       final int coverStartPos = 0;
       final int coverEndPos = (int) coverFis.length() - WAVE_HEAD_SIZE;
 
@@ -166,7 +173,7 @@ public class AudioMixUtil {
     // 删除源文件,
     //new File(srcWavePath).delete();
     // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, byteNum * 8);
+    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, bitNum);
     //删除临时文件
     new File(tempOutPcmPath).delete();
   }
@@ -184,7 +191,7 @@ public class AudioMixUtil {
     String coverWavePath = coverAudio.getPath();
     int sampleRate = srcAudio.getSampleRate();
     int channels = srcAudio.getChannel();
-    int byteNum = srcAudio.getByteNum();
+    int bitNum = srcAudio.getBitNum();
     RandomAccessFile srcFis = null;
     RandomAccessFile coverFis = null;
     RandomAccessFile newFos = null;
@@ -196,7 +203,7 @@ public class AudioMixUtil {
       coverFis = new RandomAccessFile(coverWavePath, "rw");
       newFos = new RandomAccessFile(tempOutPcmPath, "rw");
 
-      final int srcStartPos = getPositionFromWave(startTime, channels, sampleRate);
+      final int srcStartPos = getPositionFromWave(startTime, sampleRate, channels, bitNum);
       final int coverStartPos = 0;
       final int coverEndPos = (int) coverFis.length() - WAVE_HEAD_SIZE;
 
@@ -254,20 +261,42 @@ public class AudioMixUtil {
     // 删除源文件,
     //new File(srcWavePath).delete();
     // 转换临时文件为源文件
-    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, byteNum * 8);
+    AudioEncodeUtil.convertPcm2Wav(tempOutPcmPath, outAudio.getPath(), sampleRate, channels, bitNum);
     //删除临时文件
     new File(tempOutPcmPath).delete();
   }
 
+
   /**
    * 获取wave文件某个时间对应的数据位置
+   * @param time 时间
+   * @param sampleRate 采样率
+   * @param channels 声道数
+   * @param bitNum 采样位数
+   * @return
    */
-  private static int getPositionFromWave(float time, int channels, int sampleRate) {
-    int position = (int) (time * 16 / 8 * channels * sampleRate);
+  private static int getPositionFromWave(float time, int sampleRate, int channels, int bitNum) {
+    int byteNum = bitNum / 8;
+    int position = (int) (time * sampleRate * channels * byteNum);
 
-    position = position / (16 / 8 * channels) * (16 / 8 * channels);
+    position = position / (byteNum * channels) * (byteNum * channels);
 
     return position;
+  }
+
+  /**
+   * 复制wav header 数据
+   *
+   * @param headerData wav header 数据
+   * @param fos 目标输出流
+   */
+  private static void copyHeadData(byte[] headerData, RandomAccessFile fos) {
+    try {
+      fos.seek(0);
+      fos.write(headerData);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   /**
@@ -286,8 +315,6 @@ public class AudioMixUtil {
     try {
 
       while ((length = fis.read(buffer)) != -1) {
-
-        //short[] aa = converToShort(buffer);
 
         fos.write(buffer, 0, length);
 
@@ -406,4 +433,5 @@ public class AudioMixUtil {
 
     return buffer;
   }
+
 }

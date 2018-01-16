@@ -6,12 +6,12 @@ import android.content.Intent;
 /**
  * 执行后台任务的服务
  */
-public class TaskService extends IntentService {
+public class AudioTaskService extends IntentService {
 
   private AudioTaskHandler mTaskHandler;
 
-  public TaskService() {
-    super("TaskService");
+  public AudioTaskService() {
+    super("AudioTaskService");
   }
 
   @Override public void onCreate() {

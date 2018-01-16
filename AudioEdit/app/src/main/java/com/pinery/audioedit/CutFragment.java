@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -84,6 +85,11 @@ public class CutFragment extends Fragment {
   }
 
   private void initViews(View view) {
+    view.setOnTouchListener(new View.OnTouchListener() {
+      @Override public boolean onTouch(View v, MotionEvent event) {
+        return true;
+      }
+    });
     tvAudioPath1 = view.findViewById(R.id.tv_audio_path_1);
     btnPickAudioPath1 = view.findViewById(R.id.btn_pick_audio_1);
     btnCutAudio = view.findViewById(R.id.btn_cut_audio);
@@ -131,7 +137,7 @@ public class CutFragment extends Fragment {
   }
 
   /**
-   *
+   * 裁剪音频
    */
   private void cutAudio() {
 
@@ -139,6 +145,10 @@ public class CutFragment extends Fragment {
 
     if(TextUtils.isEmpty(path1)){
       ToastUtil.showToast("音频路径为空");
+      return;
+    }
+    if(TextUtils.isEmpty(etStartTime.getText().toString()) || TextUtils.isEmpty(etEndTime.getText().toString())){
+      ToastUtil.showToast("开始时间和结束时间不能为空");
       return;
     }
 

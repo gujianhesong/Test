@@ -1,6 +1,7 @@
 package com.pinery.audioedit.util;
 
 import android.annotation.TargetApi;
+import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
@@ -296,16 +297,25 @@ import static android.R.attr.format;
     }
 
     mediaFormat = mediaExtractor.getTrackFormat(0);
-    sampleRate = mediaFormat.containsKey(MediaFormat.KEY_SAMPLE_RATE) ? mediaFormat.getInteger(
-        MediaFormat.KEY_SAMPLE_RATE) : 44100;
-    channelCount = mediaFormat.containsKey(MediaFormat.KEY_CHANNEL_COUNT) ? mediaFormat.getInteger(
-        MediaFormat.KEY_CHANNEL_COUNT) : 1;
-    bitNumber = (mediaFormat.containsKey("bit-width") ? mediaFormat.getInteger("bit-width") : 0);
-    duration = mediaFormat.containsKey(MediaFormat.KEY_DURATION) ? mediaFormat.getLong(
-        MediaFormat.KEY_DURATION) : 0;
-    mime =
-        mediaFormat.containsKey(MediaFormat.KEY_MIME) ? mediaFormat.getString(MediaFormat.KEY_MIME)
-            : "";
+    sampleRate = mediaFormat.containsKey(MediaFormat.KEY_SAMPLE_RATE) ? mediaFormat.getInteger( MediaFormat.KEY_SAMPLE_RATE) : 44100;
+    channelCount = mediaFormat.containsKey(MediaFormat.KEY_CHANNEL_COUNT) ? mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT) : 1;
+    duration = mediaFormat.containsKey(MediaFormat.KEY_DURATION) ? mediaFormat.getLong(MediaFormat.KEY_DURATION) : 0;
+    mime = mediaFormat.containsKey(MediaFormat.KEY_MIME) ? mediaFormat.getString(MediaFormat.KEY_MIME) : "";
+
+    //根据pcmEncoding编码格式，得到采样精度，MediaFormat.KEY_PCM_ENCODING这个值不一定有
+    int pcmEncoding = mediaFormat.containsKey(MediaFormat.KEY_PCM_ENCODING) ? mediaFormat.getInteger(MediaFormat.KEY_PCM_ENCODING) : AudioFormat.ENCODING_PCM_16BIT;
+    switch (pcmEncoding){
+      case AudioFormat.ENCODING_PCM_FLOAT:
+        bitNumber = 32;
+        break;
+      case AudioFormat.ENCODING_PCM_8BIT:
+        bitNumber = 8;
+        break;
+      case AudioFormat.ENCODING_PCM_16BIT:
+      default:
+        bitNumber = 16;
+        break;
+    }
 
     LogUtil.i("歌曲信息Track info: mime:"
         + mime

@@ -287,9 +287,6 @@ public class FileUtils {
    */
   public static File renameFile(File srcFile, String newName) {
 
-    newName = srcFile.getAbsolutePath().substring(0, srcFile.getAbsolutePath().lastIndexOf("/") + 1)
-        + newName
-        + srcFile.getName().substring(srcFile.getName().lastIndexOf("."));
     File destFile = new File(newName);
     srcFile.renameTo(destFile);
 

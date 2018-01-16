@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -82,6 +83,11 @@ public class InsertFragment extends Fragment {
   }
 
   private void initViews(View view) {
+    view.setOnTouchListener(new View.OnTouchListener() {
+      @Override public boolean onTouch(View v, MotionEvent event) {
+        return true;
+      }
+    });
     tvAudioPath1 = view.findViewById(R.id.tv_audio_path_1);
     tvAudioPath2 = view.findViewById(R.id.tv_audio_path_2);
     btnPickAudioPath1 = view.findViewById(R.id.btn_pick_audio_1);
@@ -144,12 +150,17 @@ public class InsertFragment extends Fragment {
   private void insertAudio() {
     String path1 = tvAudioPath1.getText().toString();
     String path2 = tvAudioPath2.getText().toString();
-    float startTime = Float.valueOf(etStartTime.getText().toString());
 
     if(TextUtils.isEmpty(path1) || TextUtils.isEmpty(path2)){
       ToastUtil.showToast("音频路径为空");
       return;
     }
+    if(TextUtils.isEmpty(etStartTime.getText().toString())){
+      ToastUtil.showToast("开始时间不能为空");
+      return;
+    }
+
+    float startTime = Float.valueOf(etStartTime.getText().toString());
 
     float path1Time = FileUtils.getFilePlayTime(getContext(), new File(path1)) / 1000f;
     if(startTime < 0 || startTime > path1Time){

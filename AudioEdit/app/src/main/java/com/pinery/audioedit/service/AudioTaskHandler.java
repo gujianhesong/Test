@@ -1,20 +1,16 @@
 package com.pinery.audioedit.service;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import com.pinery.audioedit.bean.Audio;
 import com.pinery.audioedit.bean.AudioMsg;
 import com.pinery.audioedit.callback.DecodeOperateInterface;
 import com.pinery.audioedit.common.Constant;
-import com.pinery.audioedit.util.AudioMixUtil;
+import com.pinery.audioedit.util.AudioEditUtil;
 import com.pinery.audioedit.util.DecodeEngine;
 import com.pinery.audioedit.util.FileUtils;
 import com.pinery.audioedit.util.ToastUtil;
 import java.io.File;
 import org.greenrobot.eventbus.EventBus;
-
-import static android.R.attr.path;
-import static com.pinery.audioedit.util.AudioMixUtil.mixAudioWithSame;
 
 /**
  */
@@ -70,29 +66,37 @@ public class AudioTaskHandler {
 
   }
 
-  private void cutAudio(String path1, float startTime, float endTime){
-    String fileName1 = new File(path1).getName();
-    String nameNoSuffix = fileName1.substring(0, fileName1.lastIndexOf('.'));
-    fileName1 = nameNoSuffix + Constant.SUFFIX_WAV;
+  /**
+   * 裁剪音频
+   * @param srcPath 源音频路径
+   * @param startTime 裁剪开始时间
+   * @param endTime 裁剪结束时间
+   */
+  private void cutAudio(String srcPath, float startTime, float endTime){
+    String fileName = new File(srcPath).getName();
+    String nameNoSuffix = fileName.substring(0, fileName.lastIndexOf('.'));
+    fileName = nameNoSuffix + Constant.SUFFIX_WAV;
     String outName = nameNoSuffix + "_cut.wav";
 
-    String destPath1 = FileUtils.getAudioEditStorageDirectory() + File.separator + outName;
+    //裁剪后音频的路径
+    String destPath = FileUtils.getAudioEditStorageDirectory() + File.separator + outName;
 
-    decodeAudio(path1, destPath1);
+    //解码源音频，得到解码后的文件
+    decodeAudio(srcPath, destPath);
 
-    if(!FileUtils.checkFileExist(destPath1)){
-      ToastUtil.showToast("解码失败" + destPath1);
+    if(!FileUtils.checkFileExist(destPath)){
+      ToastUtil.showToast("解码失败" + destPath);
       return;
     }
 
-    Audio audio1 = getAudioFromPath(destPath1);
+    Audio audio = getAudioFromPath(destPath);
 
-    if(audio1 != null){
-      AudioMixUtil.cutAudio(audio1, startTime, endTime);
+    if(audio != null){
+      AudioEditUtil.cutAudio(audio, startTime, endTime);
     }
 
     String msg = "裁剪完成";
-    EventBus.getDefault().post(new AudioMsg(AudioTaskCreator.ACTION_AUDIO_CUT, destPath1, msg));
+    EventBus.getDefault().post(new AudioMsg(AudioTaskCreator.ACTION_AUDIO_CUT, destPath, msg));
   }
 
   private void insertAudio(String path1, String path2, float startTime){
@@ -122,7 +126,7 @@ public class AudioTaskHandler {
     outAudio.setPath(new File(new File(destPath1).getParentFile(), "insert_out.wav").getAbsolutePath());
 
     if(audio1 != null && audio2 != null){
-      AudioMixUtil.insertAudioWithSame(audio1, audio2, outAudio, startTime);
+      AudioEditUtil.insertAudioWithSame(audio1, audio2, outAudio, startTime);
     }
 
     String msg = "插入完成";
@@ -157,7 +161,7 @@ public class AudioTaskHandler {
     outAudio.setPath(new File(new File(destPath1).getParentFile(), "out.wav").getAbsolutePath());
 
     if(audio1 != null && audio2 != null){
-      AudioMixUtil.mixAudioWithSame(audio1, audio2, outAudio, 0);
+      AudioEditUtil.mixAudioWithSame(audio1, audio2, outAudio, 0);
     }
 
     String msg = "合成完成";
@@ -190,6 +194,11 @@ public class AudioTaskHandler {
     });
   }
 
+  /**
+   * 获取根据解码后的文件得到audio数据
+   * @param path
+   * @return
+   */
   private Audio getAudioFromPath(String path){
     if(!FileUtils.checkFileExist(path)){
       return null;

@@ -1,11 +1,14 @@
 package com.pinery.audioedit.bean;
 
+import android.media.AudioFormat;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import java.io.File;
 import java.io.FileInputStream;
+
+import static android.media.MediaFormat.KEY_PCM_ENCODING;
 
 /**
  * 音频信息
@@ -16,7 +19,7 @@ public class Audio {
     private float volume = 1f;
     private int channel = 2;
     private int sampleRate = 44100;
-    private int byteNum = 2;
+    private int bitNum = 16;
     private int timeMillis;
 
     public String getPath() {
@@ -59,12 +62,12 @@ public class Audio {
         this.sampleRate = sampleRate;
     }
 
-    public int getByteNum() {
-        return byteNum;
+    public int getBitNum() {
+        return bitNum;
     }
 
-    public void setByteNum(int byteNum) {
-        this.byteNum = byteNum;
+    public void setBitNum(int bitNum) {
+        this.bitNum = bitNum;
     }
 
     public int getTimeMillis() {
@@ -102,13 +105,26 @@ public class Audio {
         Audio audio = new Audio();
         audio.name = inputFile.getName();
         audio.path = inputFile.getAbsolutePath();
-        audio.channel = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-        audio.sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-        audio.byteNum = (format.containsKey("bit-width") ? format.getInteger("bit-width") : 0) / 8;
+        audio.sampleRate = format.containsKey(MediaFormat.KEY_SAMPLE_RATE) ? format.getInteger(MediaFormat.KEY_SAMPLE_RATE) : 44100;
+        audio.channel = format.containsKey(MediaFormat.KEY_CHANNEL_COUNT) ? format.getInteger(MediaFormat.KEY_CHANNEL_COUNT) : 1;
         audio.timeMillis = (int) ((format.getLong(MediaFormat.KEY_DURATION) / 1000.f));
 
+        //根据pcmEncoding编码格式，得到采样精度，MediaFormat.KEY_PCM_ENCODING这个值不一定有
+        int pcmEncoding = format.containsKey(MediaFormat.KEY_PCM_ENCODING) ? format.getInteger(MediaFormat.KEY_PCM_ENCODING) : AudioFormat.ENCODING_PCM_16BIT;
+        switch (pcmEncoding){
+            case AudioFormat.ENCODING_PCM_FLOAT:
+                audio.bitNum = 32;
+                break;
+            case AudioFormat.ENCODING_PCM_8BIT:
+                audio.bitNum = 8;
+                break;
+            case AudioFormat.ENCODING_PCM_16BIT:
+            default:
+                audio.bitNum = 16;
+                break;
+        }
+
         extractor.release();
-        extractor = null;
 
         return audio;
     }

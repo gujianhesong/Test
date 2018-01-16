@@ -18,13 +18,13 @@ public class AudioTaskCreator {
   public static final String END_TIME = "end_time";
 
   /**
-   *
+   * 启动音频裁剪任务
    * @param context
    * @param path
    */
   public static void createCutAudioTask(Context context, String path, float startTime, float endTime){
 
-    Intent intent = new Intent(context, TaskService.class);
+    Intent intent = new Intent(context, AudioTaskService.class);
     intent.setAction(ACTION_AUDIO_CUT);
     intent.putExtra(PATH_1, path);
     intent.putExtra(START_TIME, startTime);
@@ -41,7 +41,7 @@ public class AudioTaskCreator {
    */
   public static void createInsertAudioTask(Context context, String path1, String path2, float insertTime){
 
-    Intent intent = new Intent(context, TaskService.class);
+    Intent intent = new Intent(context, AudioTaskService.class);
     intent.setAction(ACTION_AUDIO_INSERT);
     intent.putExtra(PATH_1, path1);
     intent.putExtra(PATH_2, path2);
@@ -59,7 +59,7 @@ public class AudioTaskCreator {
    */
   public static void createMixAudioTask(Context context, String path1, String path2){
 
-    Intent intent = new Intent(context, TaskService.class);
+    Intent intent = new Intent(context, AudioTaskService.class);
     intent.setAction(ACTION_AUDIO_MIX);
     intent.putExtra(PATH_1, path1);
     intent.putExtra(PATH_2, path2);
