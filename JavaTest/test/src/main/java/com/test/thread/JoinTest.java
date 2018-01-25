@@ -15,9 +15,15 @@ package com.test.thread;
  */
 public class JoinTest {
   private static long time = 0;
+  private static void resetTime(){
+    time = System.currentTimeMillis();
+  }
+  private static void printContent(String content){
+    System.out.println(content + "     时间：" + (System.currentTimeMillis() - time));
+  }
 
   public static void main(String[] argg){
-    time = System.currentTimeMillis();
+    resetTime();
 
     printContent("main 方法开始");
 
@@ -68,8 +74,6 @@ public class JoinTest {
     }
   }
 
-  private static void printContent(String content){
-    System.out.println(content + "     时间：" + (System.currentTimeMillis() - time));
-  }
+
 
 }
