@@ -35,6 +35,14 @@
         />
   </LinearLayout>
 
+  <SeekBar
+      android:id="@+id/sb_audio_1"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:max="100"
+      android:progress="50"
+      />
+
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -58,6 +66,14 @@
         android:text="选择音频"
         />
   </LinearLayout>
+
+  <SeekBar
+      android:id="@+id/sb_audio_2"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:max="100"
+      android:progress="50"
+      />
 
   <Button
       android:id="@+id/btn_mix_audio"

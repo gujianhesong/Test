@@ -184,8 +184,10 @@ public class AudioEditUtil {
    * @param srcAudio 源音频路径
    * @param coverAudio 覆盖音频路径
    * @param startTime 源音频起始时间
+   * @param progress1 源音频音频强度
+   * @param progress2 附加音频音频强度
    */
-  public static void mixAudioWithSame(Audio srcAudio, Audio coverAudio, Audio outAudio, float startTime) {
+  public static void mixAudioWithSame(Audio srcAudio, Audio coverAudio, Audio outAudio, float startTime, float progress1, float progress2) {
 
     String srcWavePath = srcAudio.getPath();
     String coverWavePath = coverAudio.getPath();
@@ -217,8 +219,7 @@ public class AudioEditUtil {
       coverFis.seek(WAVE_HEAD_SIZE);
       //混合音频指定时间段的数据
       int copyCoverSize = coverEndPos - coverStartPos;
-      float volume = coverAudio.getVolume();
-      mixData(srcFis, coverFis, newFos, copyCoverSize, volume);
+      mixData(srcFis, coverFis, newFos, copyCoverSize, progress1, progress2);
 
       //判断源音频后面是否还有音频数据,如果有则复制
       final long srcFileSize = srcFis.getChannel().size();
@@ -376,7 +377,7 @@ public class AudioEditUtil {
    * 合成音频
    */
   private static void mixData(RandomAccessFile srcFis, RandomAccessFile coverFis,
-      RandomAccessFile fos, final int copySize, float volumeValue) {
+      RandomAccessFile fos, final int copySize, float volumeAudio1, float volumeAudio2) {
 
     MultiAudioMixer mix = MultiAudioMixer.createDefaultAudioMixer();
 
@@ -390,7 +391,8 @@ public class AudioEditUtil {
       while ((length = coverFis.read(coverBuffer)) != -1) {
 
         srcFis.read(srcBuffer);
-        coverBuffer = changeDataWithVolume(coverBuffer, volumeValue);
+        srcBuffer = changeDataWithVolume(srcBuffer, volumeAudio1);
+        coverBuffer = changeDataWithVolume(coverBuffer, volumeAudio2);
 
         byte[] mixData = mix.mixRawAudioBytes(new byte[][] { srcBuffer, coverBuffer });
         fos.write(mixData);

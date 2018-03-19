@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import com.pinery.audioedit.bean.AudioMsg;
 import com.pinery.audioedit.service.AudioTaskCreator;
@@ -37,7 +38,11 @@ public class MixFragment extends Fragment {
   private Button btnPickAudioPath1, btnPickAudioPath2;
   private Button btnMixAudio;
   private Button btnPlayAudio;
+  private SeekBar sbAudio1;
+  private SeekBar sbAudio2;
   private TextView tvMsgInfo;
+
+  private float progressAudio1, progressAudio2;
 
   private int mCurPickBtnId;
   private String mCurPath;
@@ -90,6 +95,8 @@ public class MixFragment extends Fragment {
     btnPickAudioPath2 = view.findViewById(R.id.btn_pick_audio_2);
     btnMixAudio = view.findViewById(R.id.btn_mix_audio);
     btnPlayAudio = view.findViewById(R.id.btn_play_audio);
+    sbAudio1 = view.findViewById(R.id.sb_audio_1);
+    sbAudio2 = view.findViewById(R.id.sb_audio_2);
     tvMsgInfo = view.findViewById(R.id.tv_msg_info);
 
     btnPickAudioPath1.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +153,10 @@ public class MixFragment extends Fragment {
       return;
     }
 
-    AudioTaskCreator.createMixAudioTask(getContext(), path1, path2);
+    progressAudio1 = sbAudio1.getProgress() * 1f / sbAudio1.getMax();
+    progressAudio2 = sbAudio2.getProgress() * 1f / sbAudio2.getMax();
+
+    AudioTaskCreator.createMixAudioTask(getContext(), path1, path2, progressAudio1, progressAudio2);
   }
 
   @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {

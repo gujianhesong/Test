@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
  */
 public final class CrashUtils {
 
-  private static final String INIT_DIR_NAME = Constant.NAME;
+  private static String INIT_DIR_NAME = Constant.NAME;
   private static final String TAG = "CrashUtils";
   private static final String FILE_SEP = System.getProperty("file.separator");
   private static final String LINE_SEP = System.getProperty("line.separator");

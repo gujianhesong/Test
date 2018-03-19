@@ -55,8 +55,10 @@ public class AudioTaskHandler {
         //合成
         String path1 = intent.getStringExtra(AudioTaskCreator.PATH_1);
         String path2 = intent.getStringExtra(AudioTaskCreator.PATH_2);
+        float progressAudio1 = intent.getFloatExtra(AudioTaskCreator.PROGRESS_AUDIO_1, 0);
+        float progressAudio2 = intent.getFloatExtra(AudioTaskCreator.PROGRESS_AUDIO_2, 0);
 
-        mixAudio(path1, path2);
+        mixAudio(path1, path2, progressAudio1, progressAudio2);
       }
 
         break;
@@ -134,7 +136,7 @@ public class AudioTaskHandler {
 
   }
 
-  private void mixAudio(String path1, String path2){
+  private void mixAudio(String path1, String path2, float progress1, float progress2){
     String fileName1 = new File(path1).getName();
     fileName1 = fileName1.substring(0, fileName1.lastIndexOf('.')) + Constant.SUFFIX_WAV;
     String fileName2 = new File(path2).getName();
@@ -161,7 +163,7 @@ public class AudioTaskHandler {
     outAudio.setPath(new File(new File(destPath1).getParentFile(), "out.wav").getAbsolutePath());
 
     if(audio1 != null && audio2 != null){
-      AudioEditUtil.mixAudioWithSame(audio1, audio2, outAudio, 0);
+      AudioEditUtil.mixAudioWithSame(audio1, audio2, outAudio, 0, progress1, progress2);
     }
 
     String msg = "合成完成";
