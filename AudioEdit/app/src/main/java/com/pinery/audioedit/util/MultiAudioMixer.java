@@ -17,7 +17,15 @@ public abstract class MultiAudioMixer {
 	 * @return
      */
 	public static MultiAudioMixer createDefaultAudioMixer(){
-		return createAverageAudioMixer();
+		return createAddAudioMixer();
+	}
+
+	/**
+	 * 创建叠加合成器
+	 * @return
+	 */
+	public static MultiAudioMixer createAddAudioMixer(){
+		return new AddAudioMixer();
 	}
 
 	/**
@@ -264,7 +272,7 @@ public abstract class MultiAudioMixer {
 	}
 	
 	/**
-	 * 求平均值合成器
+	 * 叠加合成器
 	 * @author Darcy
 	 */
 	private static class AddAudioMixer extends MultiAudioMixer{
@@ -286,11 +294,14 @@ public abstract class MultiAudioMixer {
 					return null;
 				}
 			}
-			
+
+			//row 代表参与合成的音频数量
+			//column 代表一段音频的采样点数，这里所有参与合成的音频的采样点数都是相同的
 			int row = bMulRoadAudioes.length;
 			int coloum = realMixAudio.length / 2;
 			short[][] sMulRoadAudioes = new short[row][coloum];
 
+			//PCM音频16位的存储是大端存储方式，即低位在前，高位在后，例如(X1Y1, X2Y2, X3Y3)数据，它代表的采样点数值就是(（Y1 * 256 + X1）, （Y2 * 256 + X2）, （Y3 * 256 + X3）)
 			for (int r = 0; r < row; ++r) {
 				for (int c = 0; c < coloum; ++c) {
 					sMulRoadAudioes[r][c] = (short) ((bMulRoadAudioes[r][c * 2] & 0xff) | (bMulRoadAudioes[r][c * 2 + 1] & 0xff) << 8);
@@ -303,12 +314,15 @@ public abstract class MultiAudioMixer {
 			for (int sc = 0; sc < coloum; ++sc) {
 				mixVal = 0;
 				sr = 0;
+				//这里采取累加法
 				for (; sr < row; ++sr) {
 					mixVal += sMulRoadAudioes[sr][sc];
 				}
+				//最终值不能大于short最大值，因此可能出现溢出
 				sMixAudio[sc] = (short) (mixVal);
 			}
 
+			//short值转为大端存储的双字节序列
 			for (sr = 0; sr < coloum; ++sr) {
 				realMixAudio[sr * 2] = (byte) (sMixAudio[sr] & 0x00FF);
 				realMixAudio[sr * 2 + 1] = (byte) ((sMixAudio[sr] & 0xFF00) >> 8);
