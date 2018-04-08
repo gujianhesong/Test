@@ -9,7 +9,7 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name="com.pinery.aidl.remote.MainActivity">
+    <activity android:name=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
@@ -25,6 +25,11 @@
         <action android:name="com.pinery.aidl.action.AIDL_ACTION"/>
       </intent-filter>
     </service>
+
+    <provider
+        android:name="com.pinery.aidl.common.IPCContentProvider"
+        android:authorities="com.pinery.aidl_remote.provider.IPCContentProvider"
+        android:exported="true"/>
 
   </application>
 

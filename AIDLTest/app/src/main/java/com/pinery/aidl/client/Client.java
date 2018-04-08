@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import com.pinery.aidl.IToastService;
+import com.pinery.aidl.common.RemoteServiceUtil;
 
 /**
  * @author hesong
@@ -23,6 +24,8 @@ public class Client {
   private Context mContext;
   private IToastService toastService;
 
+  private boolean isConnect;
+
   public Client(Context context){
     mContext = context;
   }
@@ -31,6 +34,7 @@ public class Client {
     @Override public void onServiceConnected(ComponentName name, IBinder service) {
       Log.d(TAG, "onServiceConnected");
       toastService = IToastService.Stub.asInterface(service);
+      isConnect = true;
     }
 
     @Override public void onServiceDisconnected(ComponentName name) {
@@ -40,43 +44,83 @@ public class Client {
   };
 
   public void open(){
-    Intent intent = new Intent();
+    try {
+      Intent intent = new Intent();
 
-    //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-    //intent.setPackage("com.pinery.aidl.remote");
-    //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
+      //intent.setPackage("com.pinery.aidl.remote");
+      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
 
-    intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
 
-    mContext.startService(intent);
+      mContext.startService(intent);
+    }catch (Exception ex){
+      ex.printStackTrace();
+    }
   }
 
   public void close(){
-    Intent intent = new Intent();
+    try {
+      Intent intent = new Intent();
 
-    //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-    //intent.setPackage("com.pinery.aidl.remote");
-    //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
+      //intent.setPackage("com.pinery.aidl.remote");
+      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
 
-    intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
 
-    mContext.stopService(intent);
+      mContext.stopService(intent);
+    }catch (Exception ex){
+      ex.printStackTrace();
+    }
   }
 
   public void connect(){
-    Intent intent = new Intent();
+    try {
+      Intent intent = new Intent();
 
-    //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-    //intent.setPackage("com.pinery.aidl.remote");
-    //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
+      //intent.setPackage("com.pinery.aidl.remote");
+      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
 
-    intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
 
-    mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+      mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+      isConnect = true;
+    }catch (Exception ex){
+      ex.printStackTrace();
+    }
   }
 
   public void disconnect(){
-    mContext.unbindService(mServiceConnection);
+    try {
+      mContext.unbindService(mServiceConnection);
+      isConnect = false;
+    }catch (Exception ex){
+      ex.printStackTrace();
+    }
+  }
+
+  public boolean isServiceRunning(){
+    //这是判断进程是否正在运行，判断服务是否正在运行的方法已经不可用了，所以暂时只能用变量判断了
+    //return ServiceUtil.isProcessRunning(mContext, "com.pinery.aidl.remote_service");
+    //return isConnect;
+    boolean isRunning = RemoteServiceUtil.isServiceRunning(mContext);
+    return isRunning;
+  }
+
+  public boolean isServiceConnected(){
+    return isConnect;
+  }
+
+  public void toogleOpen(){
+    if(isServiceRunning()){
+      disconnect();
+      close();
+    }else{
+      open();
+    }
   }
 
   public void showToast(String text) throws RemoteException {

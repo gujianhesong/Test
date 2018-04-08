@@ -1,14 +1,15 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
   compileSdkVersion 27
   buildToolsVersion "27.0.2"
+
   defaultConfig {
-    applicationId "com.pinery.aidl.client"
     minSdkVersion 15
     targetSdkVersion 27
     versionCode 1
     versionName "1.0"
+
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
   buildTypes {
@@ -25,7 +26,5 @@ dependencies {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
   compile 'com.android.support:appcompat-v7:27.+'
-  compile 'com.android.support.constraint:constraint-layout:1.0.2'
-  compile project(':commonlib')
   testCompile 'junit:junit:4.12'
 }

@@ -1,1 +1,1 @@
-include ':app', ':remote'
+include ':app', ':remote', ':commonlib'

@@ -1,23 +1,20 @@
 package com.pinery.aidl.remote;
 
-import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
   private Client mClient;
 
-  private Button btnServiceOpen, btnServiceConnect;
-  private TextView tvServiceOpen;
+  private Button btnServiceOpen;
+  private Button btnServiceConnnect;
+  private TextView tvServiceMsg;
   private Handler mHandler = new Handler();
-
-  private boolean isConnect;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -29,51 +26,41 @@ public class MainActivity extends AppCompatActivity {
 
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+
+    updateServiceState();
+  }
+
   private void initViews(){
+    tvServiceMsg = findViewById(R.id.tv_msg);
     btnServiceOpen = findViewById(R.id.btn_toogle_service);
+    btnServiceConnnect = findViewById(R.id.btn_toogle_connect);
+
     btnServiceOpen.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-
         if(mClient.isServiceRunning()){
-          mClient.disconnect();
           mClient.close();
         }else{
-          mClient.toogleOpen();
-          mClient.connect();
+          mClient.open();
         }
 
-        mHandler.postDelayed(new Runnable() {
-          @Override public void run() {
-            updateServiceState();
-          }
-        }, 500);
+        updateServiceState();
 
       }
     });
+    btnServiceConnnect.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        if(mClient.isServiceConnected()){
+          mClient.disconnect();
+        }else{
+          mClient.connect();
+        }
 
-    //btnServiceConnect = findViewById(R.id.btn_toogle_connect);
-    //btnServiceConnect.setOnClickListener(new View.OnClickListener() {
-    //  @Override public void onClick(View v) {
-    //
-    //    if(!mClient.isServiceRunning()){
-    //      Toast.makeText(getBaseContext(), "服务没有开启", Toast.LENGTH_SHORT).show();
-    //      return;
-    //    }
-    //
-    //    if(isConnect){
-    //      mClient.disconnect();
-    //    }else{
-    //      mClient.connect();
-    //    }
-    //    isConnect = !isConnect;
-    //
-    //    updateServiceState();
-    //
-    //  }
-    //});
+        updateServiceState();
 
-    tvServiceOpen = findViewById(R.id.tv_toogle_service);
-
+      }
+    });
     findViewById(R.id.btn_show_toast).setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         try {
@@ -99,14 +86,21 @@ public class MainActivity extends AppCompatActivity {
         String msg = "";
         if(mClient.isServiceRunning()){
           btnServiceOpen.setText("停止服务");
-          msg = "服务已开启, 已连接服务";
+          msg = "服务已开启";
         }else{
           btnServiceOpen.setText("开启服务");
-          msg = "服务已停止, 未连接服务";
+          msg = "服务已停止";
         }
 
-        tvServiceOpen.setText(msg);
+        if(mClient.isServiceConnected()){
+          btnServiceConnnect.setText("断连服务");
+          msg += "，已连接服务";
+        }else{
+          btnServiceConnnect.setText("连接服务");
+          msg += "，未连接服务";
+        }
 
+        tvServiceMsg.setText(msg);
 
       }
     }, 500);
