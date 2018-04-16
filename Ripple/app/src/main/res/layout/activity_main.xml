@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+    <Button
+        android:id="@+id/btn_toogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="展开/收起"
+        />
+
+    <Button
+        android:id="@+id/btn_toogle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="展开/收起,移动缩放"
+        />
+  </LinearLayout>
+
+  <com.test.ripple.CustomRelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+
+    <!-- 水波纹布局 -->
+    <com.test.ripple.RippleLayout
+        android:id="@+id/ripple_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#77ffff00"
+        >
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="RoundShowLayout"
+          />
+
+      <RelativeLayout
+          android:id="@+id/iv_loading"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="32dp"
+          android:background="#77ff0000"
+          >
+        <Button
+            android:id="@+id/btn_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="测试点击消息"
+            />
+      </RelativeLayout>
+
+    </com.test.ripple.RippleLayout>
+
+  </com.test.ripple.CustomRelativeLayout>
+
+
+</LinearLayout>

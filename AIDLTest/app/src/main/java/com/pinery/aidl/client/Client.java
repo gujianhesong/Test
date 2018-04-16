@@ -21,6 +21,10 @@ import com.pinery.aidl.common.RemoteServiceUtil;
 public class Client {
   private static final String TAG = Client.class.getSimpleName();
 
+  private static final String SERVICE_PKG_NAME = "com.pinery.aidl.remote";
+  private static final String SERVICE_NAME = "com.pinery.aidl.remote.AIDLService";
+  private static final String SERVICE_ACTION_NAME = "com.pinery.aidl.action.AIDL_ACTION";
+
   private Context mContext;
   private IToastService toastService;
 
@@ -48,10 +52,10 @@ public class Client {
       Intent intent = new Intent();
 
       //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-      //intent.setPackage("com.pinery.aidl.remote");
-      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //intent.setPackage(SERVICE_PKG_NAME);
+      //intent.setAction(SERVICE_ACTION_NAME);
 
-      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName(SERVICE_PKG_NAME, SERVICE_NAME);
 
       mContext.startService(intent);
     }catch (Exception ex){
@@ -64,10 +68,10 @@ public class Client {
       Intent intent = new Intent();
 
       //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-      //intent.setPackage("com.pinery.aidl.remote");
-      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //intent.setPackage(SERVICE_PKG_NAME);
+      //intent.setAction(SERVICE_ACTION_NAME);
 
-      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName(SERVICE_PKG_NAME, SERVICE_NAME);
 
       mContext.stopService(intent);
     }catch (Exception ex){
@@ -80,10 +84,10 @@ public class Client {
       Intent intent = new Intent();
 
       //跨应用启动和绑定服务，5.0版本以上不能设置隐式Intent来绑定服务了
-      //intent.setPackage("com.pinery.aidl.remote");
-      //intent.setAction("com.pinery.aidl.action.AIDL_ACTION");
+      //intent.setPackage(SERVICE_PKG_NAME);
+      //intent.setAction(SERVICE_ACTION_NAME);
 
-      intent.setClassName("com.pinery.aidl.remote", "com.pinery.aidl.remote.AIDLService");
+      intent.setClassName(SERVICE_PKG_NAME, SERVICE_NAME);
 
       mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
