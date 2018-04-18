@@ -1,7 +1,5 @@
 # 简介
-这是仿Google桌面水波纹展开收起动画测试项目，详情查看[仿Google原生桌面水波纹展开收起动画实现]()
-
-![](https://github.com/gujianhesong/Test/blob/master/Ripple/screen/ripple_test.gif?raw=true)
+这是FFmpeg Android平台的测试项目，后续将不断更新。。。
 
 >[我的博客](http://blog.csdn.net/hesong1120?ref=toolbar)
 <br>[GitHub](https://github.com/gujianhesong)

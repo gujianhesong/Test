@@ -1,7 +1,9 @@
 # 简介
-这是仿Google桌面水波纹展开收起动画测试项目，详情查看[仿Google原生桌面水波纹展开收起动画实现]()
+本项目是测试客户端与服务端进行AIDL通信的测试列子，分为两个：
+- 同一个APP下不同进程之间的通信。
+- 不同APP之间的通信。
 
-![](https://github.com/gujianhesong/Test/blob/master/Ripple/screen/ripple_test.gif?raw=true)
+两者之间有些许差别，代码中有注释。
 
 >[我的博客](http://blog.csdn.net/hesong1120?ref=toolbar)
 <br>[GitHub](https://github.com/gujianhesong)

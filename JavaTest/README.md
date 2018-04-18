@@ -1,7 +1,21 @@
 # 简介
-这是仿Google桌面水波纹展开收起动画测试项目，详情查看[仿Google原生桌面水波纹展开收起动画实现]()
+这是Java基础相关的项目，包括知识点有
 
-![](https://github.com/gujianhesong/Test/blob/master/Ripple/screen/ripple_test.gif?raw=true)
+### 排序算法（三大高级算法实现）
+- 快速排序
+- 堆排序
+- 归并排序
+
+### Java线程与并发相关
+- 线程中断Interrupt
+- 线程join
+- 线程yeild
+- CountDownLatch
+- CyclickBarrier
+- Semaphore
+- 生产者消费者模型的几种实现方式
+
+本项目将不断更新完善。。。
 
 >[我的博客](http://blog.csdn.net/hesong1120?ref=toolbar)
 <br>[GitHub](https://github.com/gujianhesong)
