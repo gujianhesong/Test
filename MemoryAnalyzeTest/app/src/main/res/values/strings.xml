@@ -1,0 +1,17 @@
+<resources>
+  <string name="app_name">MemoryAnalyzeTest</string>
+
+  <string name="news_title_toutiao">头条</string>
+  <string name="news_title_jingxuan">精选</string>
+  <string name="news_title_yule">娱乐</string>
+  <string name="news_title_caijing">财经</string>
+  <string name="news_title_keji">科技</string>
+  <string name="news_title_lishi">历史</string>
+  <string name="news_title_dujia">独家</string>
+  <string name="news_title_jiankang">健康</string>
+  <string name="news_title_qingan">情感</string>
+  <string name="news_title_dushu">读书</string>
+  <string name="news_title_shehui">社会</string>
+  <string name="news_title_qingsong">轻松一刻</string>
+
+</resources>
