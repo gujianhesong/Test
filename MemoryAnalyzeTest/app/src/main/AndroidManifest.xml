@@ -25,6 +25,11 @@
     </activity>
 
     <activity
+        android:name=".activity.HomeActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize"
+        android:screenOrientation="portrait"/>
+
+    <activity
         android:name=".activity.NewsDetailActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
         android:screenOrientation="portrait"/>

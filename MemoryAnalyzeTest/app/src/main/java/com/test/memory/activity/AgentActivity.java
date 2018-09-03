@@ -19,7 +19,7 @@ public class AgentActivity extends AppCompatActivity {
 
   private Fragment mFragment;
 
-  protected Class<? extends Fragment> provideFragmentClass() {
+  protected Class<? extends Fragment> provideFragmentClass() throws ClassNotFoundException {
     return null;
   }
 

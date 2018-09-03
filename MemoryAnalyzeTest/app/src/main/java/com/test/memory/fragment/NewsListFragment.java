@@ -1,19 +1,24 @@
 package com.test.memory.fragment;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
+
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
-import com.github.jdsjlzx.interfaces.OnItemLongClickListener;
 import com.test.memory.activity.NewsDetailActivity;
 import com.test.memory.adapter.BaseAdapter;
 import com.test.memory.adapter.NewsAdapter;
 import com.test.memory.base.BaseListFragment;
 import com.test.memory.bean.NewsInfo;
+import com.test.memory.common.ControInfos;
 import com.test.memory.mvp.NewsContract;
 import com.test.memory.mvp.NewsPresenter;
 import com.test.memory.util.NetWorkUtil;
+import com.test.memory.util.ReflectUtil;
+import com.test.memory.widget.LeakAnimView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +35,8 @@ public class NewsListFragment extends BaseListFragment<NewsPresenter>
   private int mCurPage;
   private String mNewsType;
 
+  private LeakAnimView animView;
+
   public static NewsListFragment newInstance() {
     return new NewsListFragment();
   }
@@ -38,6 +45,47 @@ public class NewsListFragment extends BaseListFragment<NewsPresenter>
     NewsPresenter presenter = new NewsPresenter();
     presenter.setNewsType(mNewsType);
     return presenter;
+  }
+
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    if(ControInfos.testMemory){
+      //如果测试内存泄露问题，则执行
+      animView = new LeakAnimView(view.getContext());
+      RelativeLayout parent = (RelativeLayout) view;
+      RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+      params.addRule(RelativeLayout.CENTER_IN_PARENT);
+      parent.addView(animView, params);
+      animView.start();
+    }
+
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+
+    if(ControInfos.testMemory){
+      //如果测试内存泄露问题，则执行
+      if(animView != null && animView.getParent() != null){
+        Log.e("NewsListFragment", "remove pre, animView parent : " + animView.getParent());
+        RelativeLayout parent = (RelativeLayout) animView.getParent();
+        animView.cancel();
+        parent.removeView(animView);
+
+        //这里通过反射主动调用RelativeLayout的sortChildren方法，达到清除animView被RelativeLayout$DependencyGraph$Node持有引用的问题
+        if(ControInfos.testMemoryOptimize){
+          ReflectUtil.invokeMethod(parent.getClass().getName(), "sortChildren", parent, null, new Object[]{});
+        }
+
+        Log.e("NewsListFragment", "remove post, animView parent : " + animView.getParent());
+        Log.e("NewsListFragment", "remove post, parent size : " + parent.getChildCount());
+
+        animView = null;
+      }
+    }
   }
 
   @Override protected void initViews(View view, Bundle savedInstanceState) {
