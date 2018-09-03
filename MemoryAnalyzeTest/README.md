@@ -5,6 +5,7 @@
 为了有一个良好的分析体验，我特意新建了一个用于分析内存方面的项目，该项目是一个简易的新闻客户端，结构上大致是这样的，mvp开发模式，网络数据方面采用Retrofit + rxjava，列表使用LRecyclerView，新闻页面由ViewPager将十几个不同类型的新闻列表Fragment页面组合在一起。种情况由于页面的切换，以及数据列表的刷新加载等，在开发中还是比较典型的，在内存控制上也是有较高要求的，因此是比较适合用来做内存分析的。
 
 [项目地址](https://github.com/gujianhesong/Test/tree/master/MemoryAnalyzeTest)
+
 ![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/0.png?raw=true)
 ![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/1.png?raw=true)
 
