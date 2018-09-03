@@ -5,6 +5,7 @@
 为了有一个良好的分析体验，我特意新建了一个用于分析内存方面的项目，该项目是一个简易的新闻客户端，结构上大致是这样的，mvp开发模式，网络数据方面采用Retrofit + rxjava，列表使用LRecyclerView，新闻页面由ViewPager将十几个不同类型的新闻列表Fragment页面组合在一起。种情况由于页面的切换，以及数据列表的刷新加载等，在开发中还是比较典型的，在内存控制上也是有较高要求的，因此是比较适合用来做内存分析的。
 
 [项目地址](https://github.com/gujianhesong/Test/tree/master/MemoryAnalyzeTest)
+![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/0.png?raw=true)
 ![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/1.png?raw=true)
 
 ### 内存快照分析方法
@@ -211,7 +212,7 @@ public class LeakAnimView extends View{
 
 但是不觉得有点奇怪吗？我在NewsListFragment的onDestroyView中是做了移除操作的，并且将animView设为null了，照理说应该没有被其他对象引用了，应该是可以被回收的，这样的话，除了有两三个LeakAnimView对象还存在之外，其他应该都是被回收的啦，但是为啥没有呢？我们看下其中一个LeakAnimView对象的引用树，发现了问题。
 ![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/10.png?raw=true)
-当前的LeakAnimView对象被android.widget.RelativeLayout$DependencyGraph$Node@318059736 (0x12f534d8)给引用了，当然它还有被其他给引用，不过经分析，有效的引用是属于RelativeLayout$DependencyGraph$Node的，那这个是干嘛用的，跟进代码发现，原来RelativeLayout中有个Node来管理它的子View，每个子View作为一个节点Node，DependencyGraph则是用来管理节点Node，Node还持有的当前的LeakAnimView对象的话，说明Node没有被释放，执行release方法,也就是DependencyGraph没有执行clear方法。
+当前的LeakAnimView对象被android.widget.RelativeLayout.DependencyGraph.Node@318059736 (0x12f534d8)给引用了，当然它还有被其他给引用，不过经分析，有效的引用是属于RelativeLayout.DependencyGraph.Node的，那这个是干嘛用的，跟进代码发现，原来RelativeLayout中有个Node来管理它的子View，每个子View作为一个节点Node，DependencyGraph则是用来管理节点Node，Node还持有的当前的LeakAnimView对象的话，说明Node没有被释放，执行release方法,也就是DependencyGraph没有执行clear方法。
 ```
 public class RelativeLayout{
     ...
@@ -232,7 +233,7 @@ public class RelativeLayout{
             mRoots.clear();
         }
 
-        static class DependencyGraph {
+        static class Node {
             ...
 
             void release() {
@@ -299,7 +300,7 @@ public class NewsListFragment extends BaseListFragment<NewsPresenter>
             animView.cancel();
             parent.removeView(animView);
 
-            //这里通过反射主动调用RelativeLayout的sortChildren方法，达到清除animView被RelativeLayout$DependencyGraph$Node持有引用的问题
+            //这里通过反射主动调用RelativeLayout的sortChildren方法，达到清除animView被RelativeLayout.DependencyGraph.Node持有引用的问题
             ReflectUtil.invokeMethod(parent.getClass().getName(), "sortChildren", parent, null, new Object[]{});
 
             Log.e("NewsListFragment", "remove post, animView parent : " + animView.getParent());
@@ -313,7 +314,7 @@ public class NewsListFragment extends BaseListFragment<NewsPresenter>
 ```
 现在测试一下看看效果。
 ![](https://github.com/gujianhesong/Test/blob/master/MemoryAnalyzeTest/screenshot/11.png?raw=true)
-很欣喜的看到，这个只有2个LeakAnimView对象了（当前的NewsListFragment和旁边的NewsListFragment所持有的LeakAnimView对象）。说明确实是由于被RelativeLayout$DependencyGraph$Node持有的引用导致LeakAnimView对象不能被回收了。当然通过反射去实现不一定是合适的办法，大家可以想想其他更合适的方法去实现。
+很欣喜的看到，这个只有2个LeakAnimView对象了（当前的NewsListFragment和旁边的NewsListFragment所持有的LeakAnimView对象）。说明确实是由于被RelativeLayout.DependencyGraph.Node持有的引用导致LeakAnimView对象不能被回收了。当然通过反射去实现不一定是合适的办法，大家可以想想其他更合适的方法去实现。
 
 显然，这样省去了10个LeakAnimView对象所占用的内存，那么再延伸到NewsListFragment持有的View的话，是不是可以想办法去实现回收其他10个NewsListFragment中的View的内存呢，那么想想，内存占用是不是会减少很多？具体怎么去做需要大家自己去做尝试和验证。
 
