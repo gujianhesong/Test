@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 26
+  buildToolsVersion "27.0.3"
+  defaultConfig {
+    applicationId "com.test.mvvm"
+    minSdkVersion 15
+    targetSdkVersion 26
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    multiDexEnabled true
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+  compile 'com.android.support:appcompat-v7:26.+'
+  testCompile 'junit:junit:4.12'
+
+  compile "com.android.support:recyclerview-v7:26.+"
+  compile "com.android.support:design:26.+"
+
+  // ViewModel and LiveData
+  compile "android.arch.lifecycle:extensions:1.1.1"
+  // alternatively, just ViewModel
+  compile "android.arch.lifecycle:viewmodel:1.1.1"
+  // alternatively, just LiveData
+  compile "android.arch.lifecycle:livedata:1.1.1"
+  annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+
+  //LRecyclerView
+  compile "com.github.jdsjlzx:LRecyclerView:1.5.0"
+
+  //gson
+  compile "com.google.code.gson:gson:2.7"
+
+  //retrofit
+  compile("com.squareup.retrofit2:retrofit:2.3.0") {
+    //exclude module: 'okhttp'
+    //exclude module: 'okio'
+  }
+  compile("com.squareup.retrofit2:converter-gson:2.3.0") {
+    exclude module: 'gson'
+    exclude module: 'okhttp'
+    exclude module: 'okio'
+    exclude module: 'retrofit'
+  }
+  compile("com.squareup.retrofit2:adapter-rxjava2:2.3.0") {
+    exclude module: 'rxjava'
+    exclude module: 'okhttp'
+    exclude module: 'retrofit'
+    exclude module: 'okio'
+  }
+
+  //glide
+  compile "com.github.bumptech.glide:glide:3.7.0"
+
+  //rxjava相关
+  compile "io.reactivex.rxjava2:rxjava:2.1.1"
+  compile("io.reactivex.rxjava2:rxandroid:2.0.1") {
+    exclude module: "rxjava"
+  }
+
+  // html text
+  compile "com.zzhoujay.richtext:richtext:2.0.9"
+
+  //LeakCanary
+  debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
+  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
+
+}

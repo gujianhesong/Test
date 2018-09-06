@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+  <com.test.mvvm.widget.ViewPagerTabs
+      android:id="@+id/indicator"
+      android:layout_width="match_parent"
+      android:layout_height="36dp"
+      android:layout_gravity="top"
+      android:background="@color/colorPrimaryDark"
+      android:elevation="0dp"
+      android:orientation="horizontal"
+      android:outlineProvider="none"
+      android:textAllCaps="true"
+      style="@style/pagerTabStyle"
+      />
+
+  <android.support.v4.view.ViewPager
+      android:id="@+id/viewPager"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="9"
+      />
+
+</LinearLayout>
