@@ -2,8 +2,6 @@
 ### MVVMTest项目简介
 MVVMTest项目是基于Android Architecture架构的展示项目，是一个简单的新闻客户端项目。本项目展示了基于这种架构的两种ViewModel使用方式。
 
-![](https://github.com/gujianhesong/Test/blob/master/MVVMTest/screenshot/1.png?raw=true)
-
 ### 优势
 Android Architecture架构相比MVP架构有如下优势。
 1. 减少接口编写，不会像MVP模式那样，需要定义对应的View和Presenter接口。
@@ -18,7 +16,11 @@ Android Architecture架构相比MVP架构有如下优势。
 ### 不足
 Android Architecture架构的这种MVVM架构有它的局限性，不适合非Activity和Fragment的场景，比如全局悬浮窗，就不适合。需要使用其他方式，比如MVP。
 
->[我的GitHub](https://github.com/gujianhesong)
+![](https://github.com/gujianhesong/Test/blob/master/MVVMTest/screenshot/1.png?raw=true)
+
+>[我的博客](http://blog.csdn.net/hesong1120?ref=toolbar)
+<br>[GitHub](https://github.com/gujianhesong)
+<br>[我的简书](https://www.jianshu.com/u/75d212bdd107)
 <br>微信公众号 **hesong** ，微信扫一扫下方二维码即可关注：
 <br>![](https://raw.githubusercontent.com/gujianhesong/hesong/master/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7.jpg)
 
