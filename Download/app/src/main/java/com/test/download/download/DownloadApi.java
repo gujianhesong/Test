@@ -2,10 +2,8 @@ package com.test.download.download;
 
 import com.test.download.util.LogUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -19,26 +17,14 @@ public class DownloadApi {
 
     public static String DOWNLOAD_DIR = "/sdcard/DownloadFile/";
     public static int BUFFER_SIZE = 1024;
+    private static final int DEFAULT_TIMEOUT = 20;
 
-    private static final int DEFAULT_TIMEOUT = 5;
-    private Retrofit retrofit;
-    private FileService fileService;
-    private volatile static DownloadApi instance;
-    private Call<ResponseBody> call;
     private String url;
+    private Retrofit retrofit;
+    private FileApiService fileService;
+    private Call<ResponseBody> call;
 
-    private static Hashtable<String, DownloadApi> mFileApiTable;
-
-    static {
-        mFileApiTable = new Hashtable<>();
-    }
-
-    /**
-     * 单例模式-私有构造函数
-     *
-     * @param baseUrl
-     */
-    private DownloadApi(String baseUrl) {
+    public DownloadApi(String baseUrl) {
         this.url = baseUrl;
         int index = baseUrl.lastIndexOf("/");
         if (index >= 0) {
@@ -48,26 +34,7 @@ public class DownloadApi {
                 .client(initOkHttpClient())
                 .baseUrl(baseUrl)
                 .build();
-        fileService = retrofit.create(FileService.class);
-    }
-
-    /**
-     * 获取实例
-     *
-     * @param baseUrl
-     * @return
-     */
-    public static DownloadApi getInstance(String baseUrl) {
-        instance = mFileApiTable.get(baseUrl);
-        if (instance == null) {
-            synchronized (DownloadApi.class) {
-                if (instance == null) {
-                    instance = new DownloadApi(baseUrl);
-                    mFileApiTable.put(baseUrl, instance);
-                }
-            }
-        }
-        return instance;
+        fileService = retrofit.create(FileApiService.class);
     }
 
     /**
@@ -76,19 +43,9 @@ public class DownloadApi {
      * @param callback
      */
     public void loadFileByName(DownloadCallback callback) {
-       loadFileByName(DOWNLOAD_DIR, callback);
-    }
-
-    /**
-     * 下载文件
-     *
-     * @param downloadDir
-     * @param callback
-     */
-    public void loadFileByName(String downloadDir, DownloadCallback callback) {
         HashMap<String, DownloadInfo> downloadInfoMap = DownloadInfoUtil.getAllDownloadInfo();
         DownloadInfo downloadInfo = null;
-        if(downloadInfoMap != null){
+        if (downloadInfoMap != null) {
             downloadInfo = downloadInfoMap.get(url);
         }
         if (downloadInfo != null) {
@@ -102,6 +59,8 @@ public class DownloadApi {
             call = fileService.loadFile(url);
             call.enqueue(callback);
         }
+
+        callback.onEventStart();
     }
 
     /**
@@ -127,7 +86,6 @@ public class DownloadApi {
                 Response originalResponse = chain.proceed(chain.request());
                 return originalResponse
                         .newBuilder()
-                        .body(new FileResponseBody(originalResponse))
                         .build();
             }
         });

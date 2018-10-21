@@ -20,8 +20,6 @@ import java.util.HashMap;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 
 /**
  * Created by hesong-os on 2018/10/19.
@@ -29,6 +27,7 @@ import retrofit2.Call;
 
 public class DownloadService extends Service {
     private HashMap<String, Boolean> cancelMap = new HashMap<>();
+    private HashMap<String, DownloadApi> downloadApiMap = new HashMap<>();
 
     @Override
     public void onCreate() {
@@ -54,10 +53,10 @@ public class DownloadService extends Service {
                     public void accept(final String url) throws Exception {
                         if (state == 1) {
                             //下载
-                            excuetDownloadFile(url);
+                            download(url);
                         } else if (state == 2) {
                             //取消下载
-                            cancelDownloadFile(url);
+                            cancel(url);
                         }
                     }
                 });
@@ -65,14 +64,17 @@ public class DownloadService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void excuetDownloadFile(final String url) {
-        String downloadDir = DownloadApi.DOWNLOAD_DIR;
-        boolean isCancel;
-
-        DownloadApi.getInstance(url).loadFileByName(new DownloadCallback(url, downloadDir) {
+    /**
+     * 下载
+     *
+     * @param url
+     */
+    private void download(final String url) {
+        DownloadCallback callback = new DownloadCallback(url) {
+            String filePath;
 
             @Override
-            public void onStarted() {
+            public void onEventStart() {
                 LogUtil.e("下载开始，当前时间：" + new Date() + ", " + url);
                 DownloadEvent event = new DownloadEvent(DownloadEvent.State.START, url);
                 EventBus.getDefault().post(event);
@@ -81,47 +83,76 @@ public class DownloadService extends Service {
             }
 
             @Override
-            public void progress(String filePath, long downloaded, long total) {
+            public void onEventGetFilePath(String filePath) {
+                LogUtil.e("获取下载路径：" + filePath + ", " + url);
+                this.filePath = filePath;
+            }
+
+            @Override
+            public void onEventProgress(long downloaded, long total) {
                 int progress = (int) (100f * downloaded / total);
                 LogUtil.e("下载进度：" + downloaded + ", " + total + ", " + progress + ", " + url);
                 DownloadEvent event = new DownloadEvent(DownloadEvent.State.PROGRESS, url);
                 event.setProgress(progress);
                 event.setLocalPath(filePath);
+                event.setDownloadedSize(downloaded);
+                event.setTotalSize(total);
                 EventBus.getDefault().post(event);
             }
 
             @Override
-            public void onSuccess(File file) {
+            public void onEventSuccess(File file) {
                 LogUtil.e("下载完成，当前时间：" + new Date() + ", " + url);
                 DownloadEvent event = new DownloadEvent(DownloadEvent.State.SUCCESS, url);
+                event.setLocalPath(filePath);
                 EventBus.getDefault().post(event);
+
+                downloadApiMap.remove(url);
 
                 DownloadManager.updateDownloadingState(url, false);
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                LogUtil.e("下载错误，当前时间：" + new Date() + ", " + url + ", " + t.getMessage());
-
+            public void onEventFailure(Throwable t) {
                 Boolean obj = cancelMap.remove(url);
-                if(obj != null && obj.booleanValue()){
+                if (obj != null && obj.booleanValue()) {
+                    LogUtil.e("下载取消，当前时间：" + new Date() + ", " + url);
                     //取消
                     DownloadEvent event = new DownloadEvent(DownloadEvent.State.CANCEL, url);
+                    event.setLocalPath(filePath);
                     EventBus.getDefault().post(event);
-                }else{
+                } else {
+                    LogUtil.e("下载错误，当前时间：" + new Date() + ", " + url + ", " + t.getMessage());
                     //失败
                     DownloadEvent event = new DownloadEvent(DownloadEvent.State.FAIL, url);
+                    event.setLocalPath(filePath);
                     event.setErrorMsg(t.getMessage());
                     EventBus.getDefault().post(event);
                 }
 
+                downloadApiMap.remove(url);
+
                 DownloadManager.updateDownloadingState(url, false);
             }
-        });
+        };
+
+        DownloadApi downloadApi = new DownloadApi(url);
+        downloadApiMap.put(url, downloadApi);
+        downloadApi.loadFileByName(callback);
+
     }
 
-    private void cancelDownloadFile(final String url) {
+    /**
+     * 取消下载
+     *
+     * @param url
+     */
+    private void cancel(final String url) {
         cancelMap.put(url, true);
-        DownloadApi.getInstance(url).cancel();
+        DownloadApi downloadApi = downloadApiMap.remove(url);
+        if (downloadApi != null) {
+            downloadApi.cancel();
+        }
+
     }
 }

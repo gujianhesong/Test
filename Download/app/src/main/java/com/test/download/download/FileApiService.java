@@ -7,10 +7,10 @@ import retrofit2.http.Header;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
-public interface FileService {
+public interface FileApiService {
 
     /**
-     * 下载数据库、资源
+     * 下载
      *
      * @return
      */
@@ -19,7 +19,7 @@ public interface FileService {
     Call<ResponseBody> loadFile(@Url String fileUrl);
 
     /**
-     * 下载数据库、资源
+     * 断点续传下载
      *
      * @return
      */

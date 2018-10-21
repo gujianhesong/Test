@@ -15,6 +15,8 @@ public class DownloadEvent {
     private String localPath;
     private String errorMsg;
     private String url;
+    private long downloadedSize;
+    private long totalSize;
 
     public DownloadEvent(State state, String url) {
         setState(state);
@@ -61,4 +63,19 @@ public class DownloadEvent {
         this.url = url;
     }
 
+    public long getDownloadedSize() {
+        return downloadedSize;
+    }
+
+    public void setDownloadedSize(long downloadedSize) {
+        this.downloadedSize = downloadedSize;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
+    }
 }

@@ -18,12 +18,14 @@ import com.test.download.download.DownloadEvent;
 import com.test.download.download.DownloadInfo;
 import com.test.download.download.DownloadInfoUtil;
 import com.test.download.download.DownloadManager;
+import com.test.download.util.FormatUtil;
 import com.test.download.util.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class FileViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvFilePath, tvUrl, tvState;
+        TextView tvFilePath, tvUrl, tvState, tvDownloadSize;
         ProgressBar pbFile;
         Button btnStart, btnDelete;
 
@@ -166,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
             tvFilePath = itemView.findViewById(R.id.tv_path);
             tvUrl = itemView.findViewById(R.id.tv_url);
             tvState = itemView.findViewById(R.id.tv_state);
+            tvDownloadSize = itemView.findViewById(R.id.tv_download_size);
             pbFile = itemView.findViewById(R.id.progress_bar);
             btnStart = itemView.findViewById(R.id.btn_start);
             btnDelete = itemView.findViewById(R.id.btn_delete);
@@ -195,7 +198,12 @@ public class MainActivity extends AppCompatActivity {
                     obj = itemView.getTag(R.id.tv_url);
                     if (obj != null && obj instanceof String) {
                         String url = (String) obj;
-                        DownloadManager.excueteDownload(getBaseContext(), url);
+                        DownloadManager.cancelDownload(getBaseContext(), url);
+
+                        DownloadEvent event = hashMap.remove(url);
+                        if(event != null &&  event.getLocalPath()!= null){
+                            new File(event.getLocalPath()).delete();
+                        }
 
                         int position = mList.indexOf(url);
                         mList.remove(position);
@@ -216,7 +224,10 @@ public class MainActivity extends AppCompatActivity {
                             DownloadInfo downloadInfo = downloadInfoMap.get(event.getUrl());
                             if(downloadInfo != null){
                                 int progress = (int) (downloadInfo.getDownloadSize() * 100.0 / downloadInfo.getTotalSize());
-                                tvState.setText("已下载：" + progress + "%");
+                                tvState.setText("");
+                                tvDownloadSize.setText(FormatUtil.formetFileSize(downloadInfo.getDownloadSize()) + " / "
+                                    + FormatUtil.formetFileSize(downloadInfo.getTotalSize()) + " , "
+                                    + progress + "%");
                                 pbFile.setProgress(progress);
                                 String path = DownloadApi.DOWNLOAD_DIR + downloadInfo.getName();
                                 tvFilePath.setText(path);
@@ -233,9 +244,13 @@ public class MainActivity extends AppCompatActivity {
                     case PROGRESS:
 
                         LogUtil.i("onBindViewHolder ：" + event.getState());
-                        tvState.setText("下载进度：" + event.getProgress() + "%");
+                        tvState.setText("正在下载");
                         pbFile.setProgress(event.getProgress());
                         tvFilePath.setText(event.getLocalPath());
+
+                        tvDownloadSize.setText(FormatUtil.formetFileSize(event.getDownloadedSize()) + " / "
+                            + FormatUtil.formetFileSize(event.getTotalSize()) + " , "
+                            + event.getProgress() + "%");
 
                         break;
                     case SUCCESS:

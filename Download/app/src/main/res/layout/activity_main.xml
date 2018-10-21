@@ -7,16 +7,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="horizontal">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <EditText
             android:id="@+id/et_url"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:gravity="top|left"
+            android:hint="输入下载地址"
             android:text="https://cdn.yinxiang.com/public/android/signedEvernote/com.evernote.website.9.1.1.1081917.allArch.latest.apk"
-            android:layout_weight="1" />
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/btn_add_download"
@@ -24,11 +30,6 @@
             android:layout_height="wrap_content"
             android:text="下载" />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:background="#77ffff00"
-        android:layout_height="8dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
