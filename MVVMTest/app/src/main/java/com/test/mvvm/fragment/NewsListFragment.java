@@ -15,6 +15,8 @@ import com.test.mvvm.base.BaseListFragment;
 import com.test.mvvm.bean.ListResult;
 import com.test.mvvm.bean.NewsInfo;
 import com.test.mvvm.bean.Response;
+import com.test.mvvm.ext.MyLifecycleOwner;
+import com.test.mvvm.ext.ViewModelProvidersExt;
 import com.test.mvvm.util.NetWorkUtil;
 import com.test.mvvm.viewmodel.NewsViewModel;
 import com.test.mvvm.viewmodel.NewsViewModel2;
@@ -100,9 +102,9 @@ public class NewsListFragment extends BaseListFragment {
      * @param page
      */
     private void requestNewsInfo(int page) {
-        ViewModelProviders.of(this).get(NewsViewModel.class)
+        ViewModelProvidersExt.of(this).get(NewsViewModel.class)
                 .requestNewsInfo(mNewsType, page)
-                .observe(this, new Observer<Response<ListResult<List<NewsInfo>>>>() {
+                .observe(MyLifecycleOwner.getInstance(), new Observer<Response<ListResult<List<NewsInfo>>>>() {
                     @Override
                     public void onChanged(@Nullable Response<ListResult<List<NewsInfo>>> response) {
                         switch (response.status) {
