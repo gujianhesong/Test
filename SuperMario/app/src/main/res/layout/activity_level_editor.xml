@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#87CEEB">
+
+    <!-- Top toolbar -->
+    <LinearLayout
+        android:id="@+id/topToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#333333"
+        android:padding="4dp">
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Back"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Save"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level:"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"/>
+
+        <Spinner
+            android:id="@+id/levelSpinner"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="#444444"
+            android:layout_marginStart="8dp"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mode:"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"/>
+
+        <Spinner
+            android:id="@+id/modeSpinner"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:background="#444444"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Bottom object palette -->
+    <LinearLayout
+        android:id="@+id/bottomPalette"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#222222"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:gravity="center_vertical">
+
+        <!-- Left side - Action buttons (Horizontal) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="16dp">
+
+            <Button
+                android:id="@+id/undoButton"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="↶"
+                android:textSize="16sp"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#FF9800"/>
+
+            <Button
+                android:id="@+id/redoButton"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="↷"
+                android:textSize="16sp"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#2196F3"/>
+
+            <Button
+                android:id="@+id/deleteButton"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="🗑"
+                android:textSize="16sp"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#F44336"/>
+
+            <Button
+                android:id="@+id/resetViewButton"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="⟲"
+                android:textSize="16sp"
+                android:backgroundTint="#9C27B0"/>
+        </LinearLayout>
+
+        <!-- Right side - Object palette -->
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/objectPalette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                
+                <!-- Object buttons will be added programmatically -->
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- Editor canvas area -->
+    <FrameLayout
+        android:id="@+id/editorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomPalette"
+        android:layout_below="@id/topToolbar">
+
+        <com.game.supermario.LevelEditorView
+            android:id="@+id/editorView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
+    <!-- Info panel -->
+    <TextView
+        android:id="@+id/infoPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:background="#CC000000"
+        android:padding="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"/>
+
+</RelativeLayout>

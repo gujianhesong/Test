@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Group centered in viewport -->
+    <group android:translateX="24" android:translateY="24">
+        
+        <!-- Mario hat (red circle) -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M30,20m-25,0a25,25 0,1 1,50 0a25,25 0,1 1,-50 0"/>
+        
+        <!-- Red hat -->
+        <path
+            android:fillColor="#E70012"
+            android:pathData="M30,18m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0"/>
+        
+        <!-- Hat brim -->
+        <path
+            android:fillColor="#E70012"
+            android:pathData="M10,22 L50,22 L52,28 L8,28 Z"/>
+        
+        <!-- Face (skin tone circle) -->
+        <path
+            android:fillColor="#FFCC99"
+            android:pathData="M30,35m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0"/>
+        
+        <!-- Eyes -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M24,32m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+        <path
+            android:fillColor="#000000"
+            android:pathData="M36,32m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+        
+        <!-- Mustache -->
+        <path
+            android:fillColor="#4A2800"
+            android:pathData="M22,40 Q30,45 38,40 Q38,43 30,44 Q22,43 22,40"/>
+        
+        <!-- M letter on hat -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M25,12 L25,20 L28,20 L28,16 L30,19 L32,16 L32,20 L35,20 L35,12 L32,12 L32,15 L30,12 L28,15 L28,12 Z"/>
+        
+    </group>
+</vector>
