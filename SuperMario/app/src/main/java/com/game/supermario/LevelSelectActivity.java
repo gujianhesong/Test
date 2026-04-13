@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * Level selection screen for Super Mario game
  */
 public class LevelSelectActivity extends AppCompatActivity {
+    private boolean isRamdonMode = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,26 @@ public class LevelSelectActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openLevelEditor();
+            }
+        });
+
+        Button ramdonModeButton = findViewById(R.id.ramdonModeButton);
+        if (isRamdonMode) {
+            ramdonModeButton.setText("RAMDON MODE");
+        } else {
+            ramdonModeButton.setText("NORMAL MODE");
+        }
+        ramdonModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isRamdonMode = !isRamdonMode;
+                if (isRamdonMode) {
+                    ramdonModeButton.setText("RAMDON MODE");
+                    editorButton.setVisibility(View.GONE);
+                } else {
+                    ramdonModeButton.setText("NORMAL MODE");
+                    editorButton.setVisibility(View.VISIBLE);
+                }
             }
         });
         
@@ -73,7 +94,7 @@ public class LevelSelectActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startGame(levelIndex);
+                startGame(isRamdonMode, levelIndex);
             }
         });
 
@@ -87,9 +108,10 @@ public class LevelSelectActivity extends AppCompatActivity {
         });
     }
 
-    private void startGame(int levelIndex) {
+    private void startGame(boolean isRamdonMode, int levelIndex) {
         Intent intent = new Intent(LevelSelectActivity.this, MainActivity.class);
         intent.putExtra("LEVEL_INDEX", levelIndex);
+        intent.putExtra("RAMDON_MODE", isRamdonMode);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }

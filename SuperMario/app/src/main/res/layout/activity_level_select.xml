@@ -19,11 +19,27 @@
         android:background="@drawable/button_background_secondary"
         android:elevation="4dp"/>
 
+    <!-- Ramdon Mode Button (Top Right) -->
+    <Button
+        android:id="@+id/ramdonModeButton"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
+        android:text="RAMDON MODE"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_background_primary"
+        android:elevation="4dp"/>
+
     <!-- Level Editor Button (Top Right) -->
     <Button
         android:id="@+id/editorButton"
         android:layout_width="120dp"
         android:layout_height="45dp"
+        android:layout_below="@id/ramdonModeButton"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         android:layout_marginTop="15dp"

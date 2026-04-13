@@ -1,6 +1,9 @@
 package com.game.supermario;
 
 import android.graphics.RectF;
+
+import com.game.supermario.enemy.Enemy;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +55,7 @@ public class LevelData {
             eJson.put("x", enemy.x);
             eJson.put("y", enemy.y);
             eJson.put("type", enemy.type);
+            eJson.put("movementType", enemy.movementType);
             eJson.put("patrolWidth", enemy.patrolWidth);
             enemiesArray.put(eJson);
         }
@@ -127,10 +131,11 @@ public class LevelData {
         for (int i = 0; i < enemiesArray.length(); i++) {
             JSONObject eJson = enemiesArray.getJSONObject(i);
             EnemyData enemy = new EnemyData(
-                    (float) eJson.getDouble("x"),
-                    (float) eJson.getDouble("y"),
-                    eJson.optInt("type", 0),
-                    (float) eJson.optDouble("patrolWidth", 100)
+                (float) eJson.getDouble("x"),
+                (float) eJson.getDouble("y"),
+                eJson.optInt("type", 0),
+                eJson.optInt("movementType", 0),
+                (float) eJson.optDouble("patrolWidth", 100)
             );
             level.enemies.add(enemy);
         }
@@ -216,17 +221,19 @@ public class LevelData {
     public static class EnemyData {
         public float x, y;
         public int type;
+        public int movementType; // 0: Float, 1: Ground Walker, 2: Faller
         public float patrolWidth;
-
-        public EnemyData(float x, float y, int type, float patrolWidth) {
+        
+        public EnemyData(float x, float y, int type, int movementType, float patrolWidth) {
             this.x = x;
             this.y = y;
             this.type = type;
+            this.movementType = movementType;
             this.patrolWidth = patrolWidth;
         }
-
+        
         public Enemy toEnemy() {
-            return new Enemy(x, y, patrolWidth, type);
+            return Enemy.createEnemyWithType(x, y, Enemy.EnemyType.valueToType(type));
         }
     }
 

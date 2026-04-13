@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.widget.Toast;
 
+import com.game.supermario.enemy.Enemy;
+
 public class GameEngine {
     
     private Context context;
@@ -22,6 +24,8 @@ public class GameEngine {
     // Camera for scrolling
     private float cameraX;
     private float screenWidth;
+
+    private boolean isRamdonMode = false;
     
     // Bullets list
     private java.util.List<Bullet> bullets;
@@ -45,32 +49,40 @@ public class GameEngine {
     public float getCameraX() {
         return cameraX;
     }
+
+    public void setRamdonMode(boolean isRamdonMode){
+        this.isRamdonMode = isRamdonMode;
+    }
     
     private void loadLevel(int levelIndex) {
         // Initialize LevelCreator if needed
         LevelCreator.initialize(context);
         currentLevelIndex = levelIndex;
-
-        currentLevel = LevelCreator.loadCustomLevel(levelIndex);
-        if (currentLevel == null) {
-            switch (levelIndex) {
-                case 0:
-                    currentLevel = LevelCreator.createLevel1();
-                    break;
-                case 1:
-                    currentLevel = LevelCreator.createLevel2();
-                    break;
-                case 2:
-                    currentLevel = LevelCreator.createLevel3();
-                    break;
-                default:
-                    Toast.makeText(context, "没有这个关卡，你可以长按去创建", Toast.LENGTH_SHORT).show();
-                    ((Activity)context).finish();
-                    return;
+        if (isRamdonMode) {
+            //随机生成关卡模式
+            currentLevel = LevelCreator.generateRandomLevel(levelIndex);
+        } else {
+            //正常关卡模式
+            currentLevel = LevelCreator.loadCustomLevel(levelIndex);
+            if (currentLevel == null) {
+                switch (levelIndex) {
+                    case 0:
+                        currentLevel = LevelCreator.createLevel1();
+                        break;
+                    case 1:
+                        currentLevel = LevelCreator.createLevel2();
+                        break;
+                    case 2:
+                        currentLevel = LevelCreator.createLevel3();
+                        break;
+                    default:
+                        Toast.makeText(context, "没有这个关卡，你可以长按去创建", Toast.LENGTH_SHORT).show();
+                        ((Activity)context).finish();
+                        return;
+                }
             }
         }
 
-        
         // Reset player position for new level - spawn on the ground
         // Move spawn point away from first enemy (at x=150)
         if (player == null) {
@@ -224,7 +236,7 @@ public class GameEngine {
     
     private void updateEnemies() {
         for (Enemy enemy : currentLevel.getEnemies()) {
-            enemy.update();
+            enemy.update(currentLevel.getPlatforms());
         }
     }
     
@@ -370,7 +382,7 @@ public class GameEngine {
     }
     
     private void nextLevel() {
-        if (currentLevelIndex < 2) {
+        if (currentLevelIndex < 29) {
             loadLevel(currentLevelIndex + 1);
         } else {
             victory = true;
@@ -427,7 +439,7 @@ public class GameEngine {
             mushroom.draw(canvas, paint);
         }
 
-        // Draw mushrooms
+        // Draw bricks
         for (Brick brick : currentLevel.getBricks()) {
             brick.draw(canvas, paint);
         }

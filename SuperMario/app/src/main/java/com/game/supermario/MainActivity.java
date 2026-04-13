@@ -17,7 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Get level index from intent (default to 0)
         int levelIndex = getIntent().getIntExtra("LEVEL_INDEX", 0);
+        boolean isRamdonMode = getIntent().getBooleanExtra("RAMDON_MODE", false);
 
+        gameView.setRamdonMode(isRamdonMode);
         gameView.setLevelIndex(levelIndex);
     }
     

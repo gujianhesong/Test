@@ -62,6 +62,12 @@ public class GameView extends SurfaceView implements Runnable, SurfaceHolder.Cal
             gameEngine.setLevelIndex(levelIndex);
         }
     }
+
+    public void setRamdonMode(boolean isRamdonMode){
+        if (gameEngine != null) {
+            gameEngine.setRamdonMode(isRamdonMode);
+        }
+    }
     
     private void init() {
         getHolder().addCallback(this);

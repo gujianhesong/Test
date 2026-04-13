@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -18,13 +16,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONException;
+import com.game.supermario.enemy.Enemy;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -33,6 +30,7 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
     private LevelEditorView editorView;
     private Spinner modeSpinner;
     private Spinner levelSpinner;
+    private Spinner enemyTypeSpinner; // New spinner for enemy type
     private TextView infoPanel;
     private Button undoButton;
     private Button redoButton;
@@ -41,8 +39,10 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
     
     private int currentLevelNumber = 1;
     private boolean isDeleteMode = false;
+    private int selectedEnemyType = 0; // 0: Goomba, 1: Koopa, 2: BouncingBall
 
     private String[] modes = {"Platform", "Enemy", "Coin", "Mushroom", "Brick", "Goal"};
+    private String[] enemyTypes = {"Goomba (Brown)", "Koopa (Green)", "Bouncing Ball (Red)"};
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,9 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
         redoButton = findViewById(R.id.redoButton);
         deleteButton = findViewById(R.id.deleteButton);
         resetViewButton = findViewById(R.id.resetViewButton);
+
+        // Add enemy type spinner next to mode spinner (will be shown/hidden based on mode)
+        setupEnemyTypeSpinner();
         
         // Get level number from intent if provided
         int levelToEdit = getIntent().getIntExtra("EDIT_LEVEL", -1);
@@ -78,6 +81,14 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 editorView.setCurrentMode(position);
+
+                // Show enemy type spinner only when Enemy mode is selected
+                if (position == 1) { // Enemy mode
+                    enemyTypeSpinner.setVisibility(View.VISIBLE);
+                } else {
+                    enemyTypeSpinner.setVisibility(View.GONE);
+                }
+
                 updateInfoPanel();
             }
 
@@ -240,6 +251,41 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
         });
     }
 
+    private void setupEnemyTypeSpinner() {
+        // Create enemy type spinner programmatically and add it to the toolbar
+        LinearLayout toolbar = findViewById(R.id.topToolbar);
+
+        enemyTypeSpinner = new Spinner(this);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, enemyTypes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        enemyTypeSpinner.setAdapter(adapter);
+
+        // Set initial visibility to GONE (only show when Enemy mode is selected)
+        enemyTypeSpinner.setVisibility(View.GONE);
+
+        // Layout params for the spinner
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(16, 0, 8, 0);
+
+        // Add to toolbar after modeSpinner
+        toolbar.addView(enemyTypeSpinner, params);
+
+        enemyTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedEnemyType = position;
+                editorView.setSelectedEnemyType(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
     private void confirmLevelChange(final int newLevel) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Switch Level")
@@ -325,7 +371,7 @@ public class LevelEditorActivity extends AppCompatActivity implements LevelEdito
         // Convert enemies - FIXED: Use getType() instead of get()
         for (Enemy enemy : level.getEnemies()) {
             data.getEnemies().add(new LevelData.EnemyData(
-                    enemy.getX(), enemy.getY(), enemy.getType(), enemy.getPatrolWidth()));
+                    enemy.getX(), enemy.getY(), enemy.getEnemyType().ordinal(), enemy.getMovementType(), enemy.getPatrolWidth()));
         }
 
         // Convert coins

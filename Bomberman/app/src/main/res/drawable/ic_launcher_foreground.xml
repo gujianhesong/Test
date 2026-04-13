@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group android:translateX="24" android:translateY="24">
+
+        <!-- White helmet/head -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M30,15m-18,0a18,18 0,1 1,36 0a18,18 0,1 1,-36 0"/>
+
+        <!-- Blue visor/helmet detail -->
+        <path
+            android:fillColor="#2196F3"
+            android:pathData="M15,18 L45,18 L45,25 Q30,30 15,25 Z"/>
+
+        <!-- Face (skin tone) -->
+        <path
+            android:fillColor="#FFCC99"
+            android:pathData="M30,32m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0"/>
+
+        <!-- Eyes -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M25,30m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+        <path
+            android:fillColor="#000000"
+            android:pathData="M35,30m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+
+        <!-- Smile -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M25,36 Q30,40 35,36"
+            android:strokeWidth="1.5"
+            android:strokeColor="#000000"
+            android:strokeLineCap="round"/>
+
+        <!-- Red scarf/collar -->
+        <path
+            android:fillColor="#E70012"
+            android:pathData="M20,42 L40,42 L42,48 L18,48 Z"/>
+
+        <!-- Bomb symbol on chest (black circle) -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M30,52m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
+
+        <!-- Fuse on bomb -->
+        <path
+            android:fillColor="#FF9800"
+            android:pathData="M30,46 L30,43 L33,40"
+            android:strokeWidth="1.5"
+            android:strokeColor="#FF9800"
+            android:strokeLineCap="round"/>
+
+    </group>
+</vector>

@@ -3,6 +3,11 @@ package com.game.supermario;
 import android.content.Context;
 import android.graphics.RectF;
 
+import com.game.supermario.enemy.BouncingBall;
+import com.game.supermario.enemy.Enemy;
+import com.game.supermario.enemy.Goomba;
+import com.game.supermario.enemy.Koopa;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -11,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class LevelCreator {
 
@@ -118,10 +124,10 @@ public class LevelCreator {
         platforms.add(new RectF(2300, 700, 2600, 750));
         
         // Enemies - patrol different areas
-        enemies.add(new Enemy(250, 650, 150, 0));  // Goomba on first ground (moved away from spawn)
-        enemies.add(new Enemy(800, 650, 250, 0));  // Goomba on second ground
-        enemies.add(new Enemy(1400, 650, 200, 1)); // Koopa on third ground
-        enemies.add(new Enemy(1900, 650, 200, 0)); // Goomba on fourth ground
+        enemies.add(Enemy.createEnemyWithType(250, 650, Enemy.EnemyType.Goomba));  // Goomba on first ground (moved away from spawn)
+        enemies.add(Enemy.createEnemyWithType(800, 650, Enemy.EnemyType.Goomba));  // Goomba on second ground
+        enemies.add(Enemy.createEnemyWithType(1400, 650, Enemy.EnemyType.Koopa)); // Koopa on third ground
+        enemies.add(Enemy.createEnemyWithType(1900, 650, Enemy.EnemyType.Goomba)); // Goomba on fourth ground
         
         // Coins - placed along the path
         coins.add(new Coin(250, 560));   // First floating platform
@@ -182,12 +188,12 @@ public class LevelCreator {
         platforms.add(new RectF(2950, 200, 3200, 250));
         
         // Enemies
-        enemies.add(new Enemy(200, 650, 150, 0));   // Start area
-        enemies.add(new Enemy(1200, 450, 150, 1));  // High platform
-        enemies.add(new Enemy(1600, 650, 200, 0));  // Ground section
-        enemies.add(new Enemy(1800, 650, 150, 1));  // Ground section
-        enemies.add(new Enemy(2150, 300, 150, 0));  // Mountain top
-        enemies.add(new Enemy(2500, 250, 100, 1));  // Upper peak
+        enemies.add(Enemy.createEnemyWithType(200, 650, Enemy.EnemyType.Goomba));   // Start area
+        enemies.add(Enemy.createEnemyWithType(1200, 450, Enemy.EnemyType.Koopa));  // High platform
+        enemies.add(Enemy.createEnemyWithType(1600, 650, Enemy.EnemyType.Goomba));  // Ground section
+        enemies.add(Enemy.createEnemyWithType(1800, 650, Enemy.EnemyType.Koopa));  // Ground section
+        enemies.add(Enemy.createEnemyWithType(2150, 300, Enemy.EnemyType.Goomba));  // Mountain top
+        enemies.add(Enemy.createEnemyWithType(2500, 250, Enemy.EnemyType.Koopa));  // Upper peak
         
         // Coins
         coins.add(new Coin(600, 610));   // Staircase
@@ -253,10 +259,10 @@ public class LevelCreator {
         platforms.add(new RectF(2700, 150, 2900, 200));
         
         // Many enemies
-        enemies.add(new Enemy(950, 450, 100, 0));   // Goomba on middle platform
-        enemies.add(new Enemy(1850, 330, 150, 1));  // Koopa on long platform
-        enemies.add(new Enemy(2000, 330, 100, 0));  // Goomba on long platform
-        enemies.add(new Enemy(2100, 330, 80, 1));   // Koopa on long platform
+        enemies.add(Enemy.createEnemyWithType(950, 450, Enemy.EnemyType.Goomba));   // Goomba on middle platform
+        enemies.add(Enemy.createEnemyWithType(1850, 330, Enemy.EnemyType.Koopa));  // Koopa on long platform
+        enemies.add(Enemy.createEnemyWithType(2000, 330, Enemy.EnemyType.Goomba));  // Goomba on long platform
+        enemies.add(Enemy.createEnemyWithType(2100, 330, Enemy.EnemyType.Koopa));   // Koopa on long platform
         
         // Coins
         coins.add(new Coin(270, 640));  // On first floating platform
@@ -280,5 +286,186 @@ public class LevelCreator {
         RectF goal = new RectF(2800, 90, 2850, 150);
         
         return new Level("Castle Challenge", platforms, enemies, goal, coins, mushrooms, bricks, 2900);
+    }
+
+    // Generate a random level with specified difficulty (1-10)
+    public static Level generateRandomLevel(int levelNumber, int difficulty) {
+        Random random = new Random(levelNumber * 1000 + difficulty);
+
+        List<RectF> platforms = new ArrayList<>();
+        List<Enemy> enemies = new ArrayList<>();
+        List<Coin> coins = new ArrayList<>();
+        List<Mushroom> mushrooms = new ArrayList<>();
+        List<Brick> bricks = new ArrayList<>();
+
+        // Starting platform
+        platforms.add(new RectF(0, 700, 400, 750));
+
+        // Generate platforms with gaps and varying heights
+        float currentX = 400;
+        float groundY = 700;
+
+        // Calculate expected platform count based on difficulty
+        int platformCount = 8 + difficulty * 2;
+
+        for (int i = 0; i < platformCount; i++) {
+            // Random gap size (bigger gaps for higher difficulty)
+            float gapSize = 80 + random.nextFloat() * (50 + difficulty * 20);
+            currentX += gapSize;
+
+            // Random platform width
+            float platWidth = 150 + random.nextFloat() * 200;
+
+            // Random height variation (more variation for higher difficulty)
+            float heightVariation = (random.nextFloat() - 0.5f) * (100 + difficulty * 30);
+            float platY = groundY + heightVariation;
+
+            // Clamp to reasonable bounds
+            if (platY < 300) platY = 300;
+            if (platY > 700) platY = 700;
+
+            platforms.add(new RectF(currentX, platY, currentX + platWidth, platY + 20));
+
+            // Add floating platforms above some ground platforms
+            if (random.nextFloat() < 0.4 && platY > 400) {
+                float floatPlatY = platY - 120 - random.nextFloat() * 80;
+                float floatPlatX = currentX + 30;
+                float floatPlatWidth = 80 + random.nextFloat() * 60;
+                platforms.add(new RectF(floatPlatX, floatPlatY, floatPlatX + floatPlatWidth, floatPlatY + 20));
+
+                // Add coins on floating platforms
+                if (random.nextFloat() < 0.7) {
+                    coins.add(new Coin(floatPlatX + floatPlatWidth / 2, floatPlatY - 40));
+                }
+            }
+
+            currentX += platWidth;
+        }
+
+        // Final platform with goal
+        float finalPlatformX = currentX + 100;
+        platforms.add(new RectF(finalPlatformX, groundY, finalPlatformX + 300, groundY + 50));
+
+        // Place goal
+        RectF goal = new RectF(finalPlatformX + 200, groundY - 60, finalPlatformX + 250, groundY);
+
+        // Calculate ACTUAL level width based on final platform position
+        float levelWidth = finalPlatformX + 350; // Add buffer after final platform
+
+        // Add enemies
+        int enemyCount = 3 + difficulty;
+        for (int i = 0; i < enemyCount; i++) {
+            // Find a platform to place enemy on
+            int platIndex = 1 + random.nextInt(platforms.size() - 2);
+            RectF plat = platforms.get(platIndex);
+
+            float enemyX = plat.left + 30 + random.nextFloat() * (plat.width() - 60);
+            float enemyY = plat.top - 50;
+
+            // Choose enemy type based on difficulty
+            int enemyType;
+            if (difficulty <= 3) {
+                enemyType = 0; // Only Goombas for easy levels
+            } else if (difficulty <= 6) {
+                enemyType = random.nextFloat() < 0.7 ? 0 : 1; // Mix of Goomba and Koopa
+            } else {
+                enemyType = random.nextInt(3); // All types including BouncingBall
+            }
+            Enemy enemy = Enemy.createEnemyWithType(enemyX, enemyY, Enemy.EnemyType.valueToType(enemyType));
+
+            enemies.add(enemy);
+        }
+
+        // Add coins along the path
+        int coinCount = 10 + difficulty * 3;
+        for (int i = 0; i < coinCount; i++) {
+            float coinX = 200 + random.nextFloat() * (levelWidth - 400);
+            float coinY = 400 + random.nextFloat() * 250;
+
+            // Check if coin is not inside a platform
+            boolean validPosition = true;
+            for (RectF plat : platforms) {
+                if (coinX > plat.left && coinX < plat.right &&
+                        coinY > plat.top - 50 && coinY < plat.bottom + 50) {
+                    validPosition = false;
+                    break;
+                }
+            }
+
+            if (validPosition) {
+                coins.add(new Coin(coinX, coinY));
+            }
+        }
+
+        // Add coin arcs/lines
+        int arcCount = 2 + random.nextInt(3);
+        for (int a = 0; a < arcCount; a++) {
+            float startX = 300 + random.nextFloat() * (levelWidth - 600);
+            float startY = 500 + random.nextFloat() * 150;
+            int coinInArc = 3 + random.nextInt(4);
+
+            for (int c = 0; c < coinInArc; c++) {
+                float arcX = startX + c * 50;
+                float arcY = startY - (float)Math.sin(c * 0.5) * 60;
+                coins.add(new Coin(arcX, arcY));
+            }
+        }
+
+        // Add mushrooms (power-ups)
+        int mushroomCount = 1 + random.nextInt(2 + difficulty / 3);
+        for (int i = 0; i < mushroomCount; i++) {
+            int platIndex = 1 + random.nextInt(platforms.size() - 2);
+            RectF plat = platforms.get(platIndex);
+            float mushX = plat.left + 20 + random.nextFloat() * (plat.width() - 40);
+            float mushY = plat.top - 40;
+            mushrooms.add(new Mushroom(mushX, mushY));
+        }
+
+        // Add bricks (question blocks and regular bricks)
+        int brickCount = 5 + difficulty * 2;
+        for (int i = 0; i < brickCount; i++) {
+            float brickX = 250 + random.nextFloat() * (levelWidth - 500);
+            float brickY = 450 + random.nextFloat() * 200;
+
+            // Check if brick overlaps with platform
+            boolean overlaps = false;
+            for (RectF plat : platforms) {
+                if (brickX > plat.left - 20 && brickX < plat.right + 20 &&
+                        Math.abs(brickY - plat.top) < 60) {
+                    overlaps = true;
+                    break;
+                }
+            }
+
+            if (!overlaps) {
+                // 60% question block, 40% regular brick
+                boolean isQuestionBlock = random.nextFloat() < 0.6;
+                int contentType = isQuestionBlock ? (random.nextFloat() < 0.6 ? 0 : 1) : 2;
+                bricks.add(new Brick(brickX, brickY, contentType, isQuestionBlock));
+            }
+        }
+
+        // Add brick rows/platforms
+        int brickRowCount = random.nextInt(3);
+        for (int r = 0; r < brickRowCount; r++) {
+            float rowX = 400 + random.nextFloat() * (levelWidth - 800);
+            float rowY = 500 + random.nextFloat() * 150;
+            int bricksInRow = 3 + random.nextInt(4);
+
+            for (int b = 0; b < bricksInRow; b++) {
+                boolean isQuestion = (b == 1 || b == 3) && random.nextFloat() < 0.5;
+                int content = isQuestion ? (random.nextFloat() < 0.5 ? 0 : 1) : 2;
+                bricks.add(new Brick(rowX + b * 45, rowY, content, isQuestion));
+            }
+        }
+
+        String levelName = "Random Level " + levelNumber + " (Diff: " + difficulty + ")";
+        return new Level(levelName, platforms, enemies, goal, coins, mushrooms, bricks, levelWidth);
+    }
+
+    // Convenience method to generate level by number (difficulty scales with level number)
+    public static Level generateRandomLevel(int levelNumber) {
+        int difficulty = Math.min(10, (levelNumber - 1) / 3 + 1); // Difficulty 1-10
+        return generateRandomLevel(levelNumber, difficulty);
     }
 }

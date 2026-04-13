@@ -36,6 +36,7 @@ public class LevelEditorView extends View {
     private float levelHeight = 800f;
     
     private int currentMode = 0; // 0=Platform, 1=Enemy, 2=Coin, 3=Mushroom, 4=Goal
+    private int selectedEnemyType = 0; // 0: Goomba, 1: Koopa
     private boolean isPlacing = false;
     private boolean isDeleteMode = false;
     private RectF currentPlacement;
@@ -113,6 +114,14 @@ public class LevelEditorView extends View {
         invalidate();
     }
 
+    public void setSelectedEnemyType(int type) {
+        this.selectedEnemyType = type;
+    }
+
+    public int getSelectedEnemyType() {
+        return selectedEnemyType;
+    }
+
     public void setDeleteMode(boolean enabled) {
         this.isDeleteMode = enabled;
         invalidate();
@@ -184,7 +193,7 @@ public class LevelEditorView extends View {
         
         // Deep copy enemies
         for (LevelData.EnemyData enemy : enemies) {
-            state.enemies.add(new LevelData.EnemyData(enemy.x, enemy.y, enemy.type, enemy.patrolWidth));
+            state.enemies.add(new LevelData.EnemyData(enemy.x, enemy.y, enemy.type, enemy.movementType, enemy.patrolWidth));
         }
         
         // Deep copy coins
@@ -251,7 +260,7 @@ public class LevelEditorView extends View {
         }
         
         for (LevelData.EnemyData enemy : state.enemies) {
-            enemies.add(new LevelData.EnemyData(enemy.x, enemy.y, enemy.type, enemy.patrolWidth));
+            enemies.add(new LevelData.EnemyData(enemy.x, enemy.y, enemy.type, enemy.movementType, enemy.patrolWidth));
         }
         
         for (LevelData.CoinData coin : state.coins) {
@@ -342,15 +351,35 @@ public class LevelEditorView extends View {
 
         // Draw enemies
         for (LevelData.EnemyData enemy : enemies) {
-            paint.setColor(Color.RED);
-            canvas.drawCircle(enemy.x, enemy.y, 25, paint);
-            // Eyes
-            paint.setColor(Color.WHITE);
-            canvas.drawCircle(enemy.x - 8, enemy.y - 5, 8, paint);
-            canvas.drawCircle(enemy.x + 8, enemy.y - 5, 8, paint);
-            paint.setColor(Color.BLACK);
-            canvas.drawCircle(enemy.x - 8, enemy.y - 5, 4, paint);
-            canvas.drawCircle(enemy.x + 8, enemy.y - 5, 4, paint);
+            // Draw based on type
+            if (enemy.type == 0) {
+                // Goomba (brown)
+                paint.setColor(Color.rgb(139, 69, 19));
+            } else if (enemy.type == 1) {
+                // Koopa (green)
+                paint.setColor(Color.GREEN);
+            } else {
+                // Bouncing Ball (red/orange)
+                paint.setColor(Color.rgb(255, 100, 50));
+            }
+            
+            if (enemy.type == 2) {
+                // Bouncing ball - draw as circle
+                canvas.drawCircle(enemy.x + 25, enemy.y + 25, 25, paint);
+                // Highlight
+                paint.setColor(Color.rgb(255, 200, 150));
+                canvas.drawCircle(enemy.x + 17, enemy.y + 17, 8, paint);
+            } else {
+                // Other enemies - draw as circle with eyes
+                canvas.drawCircle(enemy.x, enemy.y, 25, paint);
+                // Eyes
+                paint.setColor(Color.WHITE);
+                canvas.drawCircle(enemy.x - 8, enemy.y - 5, 8, paint);
+                canvas.drawCircle(enemy.x + 8, enemy.y - 5, 8, paint);
+                paint.setColor(Color.BLACK);
+                canvas.drawCircle(enemy.x - 8, enemy.y - 5, 4, paint);
+                canvas.drawCircle(enemy.x + 8, enemy.y - 5, 4, paint);
+            }
         }
 
         // Draw coins
@@ -424,13 +453,53 @@ public class LevelEditorView extends View {
             if (currentMode == 0 || currentMode == 5) { // Platform or Goal
                 canvas.drawRect(currentPlacement, paint);
             } else if (currentMode == 1) { // Enemy
-                canvas.drawCircle(currentPlacement.centerX(), currentPlacement.centerY(), 25, paint);
+                // Show enemy type in preview
+                if (selectedEnemyType == 0) {
+                    paint.setColor(Color.argb(180, 139, 69, 19)); // Brown for Goomba
+                } else if (selectedEnemyType == 1) {
+                    paint.setColor(Color.argb(180, 0, 255, 0)); // Green for Koopa
+                } else {
+                    paint.setColor(Color.argb(180, 255, 100, 50)); // Red for BouncingBall
+                }
+                
+                if (selectedEnemyType == 2) {
+                    // Bouncing ball preview - circle
+                    canvas.drawCircle(currentPlacement.centerX(), currentPlacement.centerY(), 25, paint);
+                    // Label
+                    paint.setColor(Color.WHITE);
+                    paint.setTextSize(20);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText("B", currentPlacement.centerX(), currentPlacement.centerY() + 7, paint);
+                    paint.setTextAlign(Paint.Align.LEFT);
+                } else {
+                    // Other enemies - circle with label
+                    canvas.drawCircle(currentPlacement.centerX(), currentPlacement.centerY(), 25, paint);
+                    paint.setColor(Color.WHITE);
+                    paint.setTextSize(20);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText(selectedEnemyType == 0 ? "G" : "K", 
+                        currentPlacement.centerX(), currentPlacement.centerY() + 7, paint);
+                    paint.setTextAlign(Paint.Align.LEFT);
+                }
             } else if (currentMode == 2) { // Coin
                 canvas.drawCircle(currentPlacement.centerX(), currentPlacement.centerY(), 20, paint);
             } else if (currentMode == 3) { // Mushroom
                 canvas.drawCircle(currentPlacement.centerX(), currentPlacement.centerY(), 20, paint);
             } else if (currentMode == 4) { // Brick
-                canvas.drawRect(currentPlacement, paint);
+                // Preview shows random type
+                boolean willBeQuestion = Math.random() < 0.5;
+                if (willBeQuestion) {
+                    paint.setColor(Color.argb(180, 255, 165, 0));
+                    canvas.drawRect(currentPlacement, paint);
+                    paint.setColor(Color.WHITE);
+                    paint.setTextSize(28);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText("?", currentPlacement.centerX(), currentPlacement.centerY() + 10, paint);
+                } else {
+                    paint.setColor(Color.argb(180, 178, 34, 34));
+                    canvas.drawRect(currentPlacement, paint);
+                }
+                paint.setTextAlign(Paint.Align.LEFT);
             }
         }
 
@@ -818,7 +887,21 @@ public class LevelEditorView extends View {
         
         switch (currentMode) {
             case 1: // Enemy
-                LevelData.EnemyData enemy = new LevelData.EnemyData(x, y, 0, 100);
+                int movementType = 0;
+                int patrolWidth = 200;
+                switch (selectedEnemyType){
+                    case 0:{
+                        movementType = 0;
+                        patrolWidth = 200;
+                        break;
+                    }
+                    case 1:{
+                        movementType = 1;
+                        patrolWidth = 3000;
+                        break;
+                    }
+                }
+                LevelData.EnemyData enemy = new LevelData.EnemyData(x, y, selectedEnemyType, movementType, patrolWidth);
                 enemies.add(enemy);
                 listener.onEnemyPlaced(enemy);
                 saveState();

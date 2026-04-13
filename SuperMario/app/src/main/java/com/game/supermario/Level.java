@@ -1,6 +1,9 @@
 package com.game.supermario;
 
 import android.graphics.RectF;
+
+import com.game.supermario.enemy.Enemy;
+
 import java.util.List;
 
 public class Level {
